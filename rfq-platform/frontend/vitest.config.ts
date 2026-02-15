@@ -1,0 +1,20 @@
+import { defineConfig } from 'vitest/config';
+import { svelte } from '@sveltejs/vite-plugin-svelte';
+
+export default defineConfig({
+  plugins: [svelte({ hot: !process.env.VITEST })],
+  test: {
+    include: ['src/**/*.{test,spec}.{js,ts}'],
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: ['./src/tests/setup.ts'],
+  },
+  resolve: {
+    alias: {
+      $lib: '/src/lib',
+      $app: '/src/tests/mocks/app',
+    },
+    // Prefer browser (client) build of Svelte so mount() is available in tests
+    conditions: ['browser', 'import', 'module', 'default'],
+  },
+});

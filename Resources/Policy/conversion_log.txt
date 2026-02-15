@@ -1,0 +1,90 @@
+2026-02-11 19:02:18,452 - INFO - ================================================================================
+2026-02-11 19:02:18,453 - INFO - PDF/DOCX to Markdown Converter using Marker
+2026-02-11 19:02:18,453 - INFO - ================================================================================
+2026-02-11 19:02:18,454 - INFO - Using marker command: python "C:\Users\callz\OneDrive\Documents\My Projects\SynologyDrive\Websites\RFQ_Buddy\Resources\marker-master\marker-master\convert_single.py"
+2026-02-11 19:02:18,454 - INFO - 
+--------------------------------------------------------------------------------
+2026-02-11 19:02:18,455 - INFO - Processing directory: C:\Users\callz\OneDrive\Documents\My Projects\SynologyDrive\Websites\RFQ_Buddy\resources\Process
+2026-02-11 19:02:18,457 - INFO - --------------------------------------------------------------------------------
+
+2026-02-11 19:02:18,458 - INFO - Scanning directory: C:\Users\callz\OneDrive\Documents\My Projects\SynologyDrive\Websites\RFQ_Buddy\resources\Process
+2026-02-11 19:02:18,462 - INFO -   Found 15 files matching *.pdf
+2026-02-11 19:02:18,463 - INFO - Skipping 2025-10-26-15-21-34-e-PG1.pdf - .md version already exists and is not empty
+2026-02-11 19:02:18,463 - INFO - Skipping 2025-10-26-15-23-29-e-PW1(a).pdf - .md version already exists and is not empty
+2026-02-11 19:02:18,464 - INFO - Skipping 2025-10-26-15-23-52-e-PW1(b).pdf - .md version already exists and is not empty
+2026-02-11 19:02:18,464 - INFO - Skipping 2025-10-26-15-24-51-e-PW3.pdf - .md version already exists and is not empty
+2026-02-11 19:02:18,465 - INFO - Skipping 2025-10-26-15-47-19-e-PG3.pdf - .md version already exists and is not empty
+2026-02-11 19:02:18,465 - INFO - Skipping 2025-10-26-15-49-45-e-PG2.pdf - .md version already exists and is not empty
+2026-02-11 19:02:18,466 - INFO - Skipping 2025-10-26-15-55-41-e-PW3A.pdf - .md version already exists and is not empty
+2026-02-11 19:02:18,466 - INFO - Skipping 2025-11-10-16-34-21-e-PPS2.pdf - .md version already exists and is not empty
+2026-02-11 19:02:18,467 - INFO - Skipping 2025-11-10-16-39-02-e-PW2A.pdf - .md version already exists and is not empty
+2026-02-11 19:02:18,467 - INFO - Skipping 2025-11-10-16-42-50-e-PW2B.pdf - .md version already exists and is not empty
+2026-02-11 19:02:18,468 - INFO - Skipping 2025-11-20-14-27-23-e-PW3D.pdf - .md version already exists and is not empty
+2026-02-11 19:02:18,468 - INFO - Skipping 2026-01-04-13-43-55-e-PG9.pdf - .md version already exists and is not empty
+2026-02-11 19:02:18,469 - INFO - Skipping 2026-01-04-13-45-42-e-PG4.pdf - .md version already exists and is not empty
+2026-02-11 19:02:18,469 - INFO - Skipping 2026-01-04-13-47-03-e-PG3A.pdf - .md version already exists and is not empty
+2026-02-11 19:02:18,470 - INFO - Skipping 2026-01-04-13-49-32-e-PPS3.pdf - .md version already exists and is not empty
+2026-02-11 19:02:18,472 - INFO -   Found 15 files matching *.PDF
+2026-02-11 19:02:18,473 - INFO - Skipping 2025-10-26-15-21-34-e-PG1.pdf - .md version already exists and is not empty
+2026-02-11 19:02:18,473 - INFO - Skipping 2025-10-26-15-23-29-e-PW1(a).pdf - .md version already exists and is not empty
+2026-02-11 19:02:18,474 - INFO - Skipping 2025-10-26-15-23-52-e-PW1(b).pdf - .md version already exists and is not empty
+2026-02-11 19:02:18,475 - INFO - Skipping 2025-10-26-15-24-51-e-PW3.pdf - .md version already exists and is not empty
+2026-02-11 19:02:18,475 - INFO - Skipping 2025-10-26-15-47-19-e-PG3.pdf - .md version already exists and is not empty
+2026-02-11 19:02:18,476 - INFO - Skipping 2025-10-26-15-49-45-e-PG2.pdf - .md version already exists and is not empty
+2026-02-11 19:02:18,476 - INFO - Skipping 2025-10-26-15-55-41-e-PW3A.pdf - .md version already exists and is not empty
+2026-02-11 19:02:18,476 - INFO - Skipping 2025-11-10-16-34-21-e-PPS2.pdf - .md version already exists and is not empty
+2026-02-11 19:02:18,477 - INFO - Skipping 2025-11-10-16-39-02-e-PW2A.pdf - .md version already exists and is not empty
+2026-02-11 19:02:18,477 - INFO - Skipping 2025-11-10-16-42-50-e-PW2B.pdf - .md version already exists and is not empty
+2026-02-11 19:02:18,478 - INFO - Skipping 2025-11-20-14-27-23-e-PW3D.pdf - .md version already exists and is not empty
+2026-02-11 19:02:18,478 - INFO - Skipping 2026-01-04-13-43-55-e-PG9.pdf - .md version already exists and is not empty
+2026-02-11 19:02:18,478 - INFO - Skipping 2026-01-04-13-45-42-e-PG4.pdf - .md version already exists and is not empty
+2026-02-11 19:02:18,479 - INFO - Skipping 2026-01-04-13-47-03-e-PG3A.pdf - .md version already exists and is not empty
+2026-02-11 19:02:18,479 - INFO - Skipping 2026-01-04-13-49-32-e-PPS3.pdf - .md version already exists and is not empty
+2026-02-11 19:02:18,481 - INFO -   Found 11 files matching *.docx
+2026-02-11 19:02:18,482 - INFO - Skipping 2025-10-30-19-39-40-PG2-.docx - .md version already exists and is not empty
+2026-02-11 19:02:18,483 - INFO - Skipping 2025-11-02-10-24-34-PW1_V2.docx - .md version already exists and is not empty
+2026-02-11 19:02:18,483 - INFO - Skipping 2025-11-10-17-04-27-PW3-Offline_October-2025.docx - .md version already exists and is not empty
+2026-02-11 19:02:18,483 - INFO - Skipping 2025-11-13-17-04-58-PPS2-Offline_October-2025.docx - .md version already exists and is not empty
+2026-02-11 19:02:18,484 - INFO - Skipping 2025-11-17-10-20-37-PG3.docx - .md version already exists and is not empty
+2026-02-11 19:02:18,484 - INFO - Skipping 2025-11-17-10-27-07-PG1_V2.docx - .md version already exists and is not empty
+2026-02-11 19:02:18,485 - INFO - Skipping 2025-11-23-16-00-40-STD_PPS3_Offline.docx - .md version already exists and is not empty
+2026-02-11 19:02:18,485 - INFO - Skipping 2025-12-07-11-10-58-Offline-version_PG4.docx - .md version already exists and is not empty
+2026-02-11 19:02:18,485 - INFO - Skipping 2025-12-23-12-07-58-PG5A_STD.docx - .md version already exists and is not empty
+2026-02-11 19:02:18,486 - INFO - Skipping 2026-01-06-15-44-57-Dc_PPS6.docx - .md version already exists and is not empty
+2026-02-11 19:02:18,486 - INFO - Skipping 2026-01-15-13-38-01-PG9A_04-Dec-2025.docx - .md version already exists and is not empty
+2026-02-11 19:02:18,489 - INFO -   Found 11 files matching *.DOCX
+2026-02-11 19:02:18,489 - INFO - Skipping 2025-10-30-19-39-40-PG2-.docx - .md version already exists and is not empty
+2026-02-11 19:02:18,490 - INFO - Skipping 2025-11-02-10-24-34-PW1_V2.docx - .md version already exists and is not empty
+2026-02-11 19:02:18,490 - INFO - Skipping 2025-11-10-17-04-27-PW3-Offline_October-2025.docx - .md version already exists and is not empty
+2026-02-11 19:02:18,491 - INFO - Skipping 2025-11-13-17-04-58-PPS2-Offline_October-2025.docx - .md version already exists and is not empty
+2026-02-11 19:02:18,491 - INFO - Skipping 2025-11-17-10-20-37-PG3.docx - .md version already exists and is not empty
+2026-02-11 19:02:18,492 - INFO - Skipping 2025-11-17-10-27-07-PG1_V2.docx - .md version already exists and is not empty
+2026-02-11 19:02:18,493 - INFO - Skipping 2025-11-23-16-00-40-STD_PPS3_Offline.docx - .md version already exists and is not empty
+2026-02-11 19:02:18,493 - INFO - Skipping 2025-12-07-11-10-58-Offline-version_PG4.docx - .md version already exists and is not empty
+2026-02-11 19:02:18,494 - INFO - Skipping 2025-12-23-12-07-58-PG5A_STD.docx - .md version already exists and is not empty
+2026-02-11 19:02:18,494 - INFO - Skipping 2026-01-06-15-44-57-Dc_PPS6.docx - .md version already exists and is not empty
+2026-02-11 19:02:18,495 - INFO - Skipping 2026-01-15-13-38-01-PG9A_04-Dec-2025.docx - .md version already exists and is not empty
+2026-02-11 19:02:18,495 - INFO - Total files to convert in C:\Users\callz\OneDrive\Documents\My Projects\SynologyDrive\Websites\RFQ_Buddy\resources\Process: 0
+2026-02-11 19:02:18,495 - INFO - No files to convert in C:\Users\callz\OneDrive\Documents\My Projects\SynologyDrive\Websites\RFQ_Buddy\resources\Process
+2026-02-11 19:02:18,496 - INFO - 
+--------------------------------------------------------------------------------
+2026-02-11 19:02:18,496 - INFO - Processing directory: C:\Users\callz\OneDrive\Documents\My Projects\SynologyDrive\Websites\RFQ_Buddy\resources\Policy
+2026-02-11 19:02:18,496 - INFO - --------------------------------------------------------------------------------
+
+2026-02-11 19:02:18,496 - INFO - Scanning directory: C:\Users\callz\OneDrive\Documents\My Projects\SynologyDrive\Websites\RFQ_Buddy\resources\Policy
+2026-02-11 19:02:18,497 - INFO -   Found 0 files matching *.pdf
+2026-02-11 19:02:18,497 - INFO -   Found 0 files matching *.PDF
+2026-02-11 19:02:18,498 - INFO -   Found 0 files matching *.docx
+2026-02-11 19:02:18,498 - INFO -   Found 0 files matching *.DOCX
+2026-02-11 19:02:18,498 - INFO - Total files to convert in C:\Users\callz\OneDrive\Documents\My Projects\SynologyDrive\Websites\RFQ_Buddy\resources\Policy: 0
+2026-02-11 19:02:18,498 - INFO - No files to convert in C:\Users\callz\OneDrive\Documents\My Projects\SynologyDrive\Websites\RFQ_Buddy\resources\Policy
+2026-02-11 19:02:18,499 - INFO - 
+================================================================================
+2026-02-11 19:02:18,499 - INFO - CONVERSION SUMMARY
+2026-02-11 19:02:18,499 - INFO - ================================================================================
+2026-02-11 19:02:18,499 - INFO - Total files processed: 0
+2026-02-11 19:02:18,499 - INFO - Successful: 0
+2026-02-11 19:02:18,499 - INFO - Failed: 0
+2026-02-11 19:02:18,500 - INFO - Skipped: 0
+2026-02-11 19:02:18,500 - INFO - 
+All 0 files converted successfully!

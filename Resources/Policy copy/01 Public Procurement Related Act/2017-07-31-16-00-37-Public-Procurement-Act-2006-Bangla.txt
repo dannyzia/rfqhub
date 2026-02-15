@@ -1,0 +1,16 @@
+[This PDF could not be converted to text automatically.]
+
+Reason: The file "2017-07-31-16-00-37-Public-Procurement-Act-2006-Bangla.pdf" is image-based (scanned pages). Standard text extraction (pypdf, PyMuPDF) returns no text because the content is stored as images, not as selectable text.
+
+To get text from this document you can:
+
+1. Use OCR (Optical Character Recognition):
+   - Adobe Acrobat Pro: Open PDF → Tools → Scan & OCR → Recognize Text.
+   - Online: Upload to an OCR service that supports Bangla (e.g. Google Drive “Open with Google Docs” then copy text, or a Bangla OCR tool).
+   - Tesseract OCR: Install Tesseract and Bangla language data (ben), then use a script to render each page to an image and run OCR (see extract_pdf_ocr.py in project root if added).
+
+2. Re-type or copy from a text version of the Act if you have one (e.g. from a government or legal database).
+
+3. Use a scanning/OCR app on your phone that supports Bangla and export as text.
+
+File: 34 pages. Public Procurement Act 2006 (Bangla).

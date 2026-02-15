@@ -1,0 +1,22 @@
+{
+	"servers": {
+		"flowbite-mcp": {
+			"command": "npx",
+			"args": [
+				"flowbite-mcp@1.1.3"
+			],
+			"env": {
+				"FIGMA_ACCESS_TOKEN": "${input:FIGMA_ACCESS_TOKEN}"
+			},
+			"type": "stdio"
+		}
+	},
+	"inputs": [
+		{
+			"type": "promptString",
+			"id": "FIGMA_ACCESS_TOKEN",
+			"description": "Your personal access token for the Figma API",
+			"password": true
+		}
+	]
+}
