@@ -1,0 +1,12 @@
+{
+  "buildCommand": "cd frontend && npm install && npm run build",
+  "outputDirectory": "frontend/.svelte-kit",
+  "devCommand": "cd frontend && npm run dev",
+  "installCommand": "cd frontend && npm install",
+  "framework": "sveltekit",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "env": {
+    "PUBLIC_API_URL": "@public_api_url"
+  }
+}

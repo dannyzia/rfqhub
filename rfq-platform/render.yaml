@@ -1,0 +1,43 @@
+services:
+  # Backend API Service
+  - type: web
+    name: rfq-buddy-backend
+    runtime: node
+    region: oregon
+    plan: starter
+    buildCommand: cd backend && npm install && npm run build
+    startCommand: cd backend && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: FRONTEND_URL
+        fromService:
+          type: web
+          name: rfq-buddy-frontend
+          property: host
+    healthCheckPath: /health
+
+  # Frontend Service
+  - type: web
+    name: rfq-buddy-frontend
+    runtime: node
+    region: oregon
+    plan: starter
+    buildCommand: cd frontend && npm install && npm run build
+    startCommand: cd frontend && npm run preview
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PUBLIC_API_URL
+        fromService:
+          type: web
+          name: rfq-buddy-backend
+          property: host

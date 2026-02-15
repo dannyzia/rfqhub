@@ -1,3 +1,17 @@
+scripts/
+# Ignore directories
+Resources/
+plans/
+Instructions/
+.cursor/
+.rules/
+.vscode/
+.windsurf/
+restart-servers.bat
+restart-servers.ps1
+# Ignore all markdown files except README.md
+*.md
+!README.md
 # Dependencies
 node_modules/
 
@@ -37,3 +51,13 @@ test-results/
 *.tsbuildinfo
 .eslintcache
 .prettiercache
+
+# Ignore all markdown files
+*.md
+
+# Test and debug files
+**/check-*.js
+**/debug-*.js
+**/*_test.json
+**/*test.json
+debug-register.html
