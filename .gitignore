@@ -1,0 +1,10 @@
+Resources/
+plans/
+Instructions/
+.cursor/
+.rules/
+.vscode/
+.windsurf/
+# Ignore all markdown files everywhere
+*.md
+!rfq-platform/README.md
