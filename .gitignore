@@ -1,10 +1,78 @@
+# Utility scripts
+convert_docs.py
+convert_pdfs_to_md.py
+convert_policy_01.py
+convert_process_docs.py
+create-services.js
+extract_pdf_ocr.py
+extract_pdf_text.py
+fix-award.js
+fix-unused.js
+
+# Ignore directories
 Resources/
 plans/
 Instructions/
+scripts/
 .cursor/
 .rules/
 .vscode/
 .windsurf/
-# Ignore all markdown files everywhere
+
+# Local scripts
+restart-servers.bat
+restart-servers.ps1
+
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+.svelte-kit/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Testing
+coverage/
+.nyc_output/
+playwright-report/
+test-results/
+
+# Misc
+*.tsbuildinfo
+.eslintcache
+.prettiercache
+
+# Ignore all markdown files except essential ones
 *.md
-!rfq-platform/README.md
+!README.md
+!QUICKSTART.md
+!database/README.md
+!frontend/README.md
+
+# Test and debug files
+**/check-*.js
+**/debug-*.js
+**/*_test.json
+**/*test.json
+debug-register.html
