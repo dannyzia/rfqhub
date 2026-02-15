@@ -14,10 +14,14 @@ Resources/
 plans/
 Instructions/
 scripts/
+rfq-platform/
 .cursor/
 .rules/
 .vscode/
 .windsurf/
+
+# VS Code workspace files
+*.code-workspace
 
 # Local scripts
 restart-servers.bat
