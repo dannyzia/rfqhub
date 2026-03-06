@@ -282,6 +282,11 @@
     <footer class="py-8 relative z-10" style="background-color: var(--dark);">
         <div class="chaingpt-container">
             <div class="text-center">
+                <p class="text-sm mb-2" style="color: var(--grey);">
+                    <a href="/faq" class="hover:underline" style="color: var(--grey);">FAQ</a>
+                    <span class="mx-2">·</span>
+                    <a href="/guide" class="hover:underline" style="color: var(--grey);">How to use</a>
+                </p>
                 <p class="text-sm" style="color: var(--grey);">
                     &copy; 2025 RFQ Buddy. All rights reserved.
                 </p>

@@ -46,6 +46,9 @@
     <p style="color: var(--text-muted);">
       Have a bug to report or a feature request? Let us know and we'll get back to you.
     </p>
+    <p class="text-sm mt-2" style="color: var(--text-muted);">
+      See also: <a href="/faq" style="color: var(--orange); text-decoration: underline;">FAQ</a> and <a href="/guide" style="color: var(--orange); text-decoration: underline;">How-to guide</a>.
+    </p>
   </div>
 
   <!-- Success banner -->

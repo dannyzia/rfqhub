@@ -35,6 +35,8 @@
     { href: '/vendors', label: 'Vendors', roles: ['buyer', 'admin'] },
     { href: '/evaluator/dashboard', label: 'Evaluator Dashboard', roles: ['evaluator'] },
     { href: '/profile', label: 'Profile' },
+    { href: '/faq', label: 'FAQ' },
+    { href: '/guide', label: 'Guide' },
   ];
 
   function canAccess(item: NavItem): boolean {
