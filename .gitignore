@@ -150,3 +150,23 @@ test.ts
 !QUICKSTART.md
 !database/README.md
 !frontend/README.md
+!rules.md
+!rfq-buddy-rules.md
+!skills/
+!skills/*.md
+# Temporary debugging scripts  
+**/temp.js  
+**/temp.ts  
+backend/temp.js  
+backend/temp.ts  
+  
+# Windows null device file  
+nul  
+**/nul  
+  
+# Test output files  
+**/backend-test-results.txt  
+**/test-results.txt  
+  
+# Temporary setup scripts  
+fix-setup-script.js 
