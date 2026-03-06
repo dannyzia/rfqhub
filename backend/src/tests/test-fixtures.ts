@@ -245,13 +245,10 @@ export const createMockDocument = (overrides?: Partial<any>) => ({
  * Mock tender type data factory
  */
 export const createMockTenderType = (overrides?: Partial<any>) => ({
-  id: uuidv4(),
+  code: `TEST-${Date.now()}`,
   name: `Test Tender Type ${Date.now()}`,
   description: 'Test descriptor',
-  category: 'goods',
-  requiresPreQualification: false,
-  estimatedDuration: 30,
-  active: true,
+  is_active: true,
   createdAt: new Date(),
   updatedAt: new Date(),
   ...overrides,
@@ -262,12 +259,12 @@ export const createMockTenderType = (overrides?: Partial<any>) => ({
  */
 export const createMockRegistrationRequest = (overrides?: Partial<any>) => ({
   email: `register-${Date.now()}@example.com`,
-  password: 'TestPassword123@',
-  confirmPassword: 'TestPassword123@',
+  password: 'TestPassword123@!',
+  confirmPassword: 'TestPassword123@!',
   firstName: 'Test',
   lastName: 'User',
-  organizationName: `Test Organization ${Date.now()}`,
-  organizationType: 'government',
+  companyName: `Test Organization ${Date.now()}`,
+  role: 'buyer',
   country: 'US',
   ...overrides,
 });
@@ -283,24 +280,23 @@ export const createMockLoginRequest = (overrides?: Partial<any>) => ({
 
 /**
  * Mock tender creation request factory
+ * Fields match CreateTenderInput (backend/src/schemas/tender.schema.ts):
+ *  - tenderType: valid code from tender_type_definitions (NRQ1 = min 2 days, no security required)
+ *  - submissionDeadline: ISO string at least min_submission_days from now
+ *  - visibility: 'open' | 'limited'
+ *  - procurementType: 'goods' | 'works' | 'services'
+ *  - estimatedCost is intentionally omitted; when present it triggers BDT value-range
+ *    validation via the superRefine async callback in createTenderSchema. Tests that
+ *    need estimatedCost should override with a BDT-range-valid value (e.g., 5_000_000).
  */
 export const createMockTenderRequest = (overrides?: Partial<any>) => ({
   title: 'Test Tender',
   description: 'This is a test tender',
-  tenderTypeId: uuidv4(),
-  closingDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-  estimatedBudget: 100000,
-  currency: 'USD',
-  publicationMethod: 'open',
-  evaluationMethod: 'technical_and_financial',
-  items: [
-    {
-      description: 'Item 1',
-      quantity: 100,
-      unit: 'pieces',
-      estimatedUnitPrice: 1000,
-    },
-  ],
+  tenderType: 'NRQ1',
+  visibility: 'open',
+  procurementType: 'goods',
+  submissionDeadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+  currency: 'BDT',
   ...overrides,
 });
 

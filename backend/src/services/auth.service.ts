@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { pool, logger, config } from "../config";
 import { OrganizationType } from "../types/organization.types";
+import { registerSchema } from "../schemas/auth.schema";
 
 interface UserRow {
   id: string;
@@ -35,7 +36,16 @@ export const authService = {
     accessToken: string;
     refreshToken: string;
   }> {
-    const { email, password, firstName, lastName, role, companyName } = input;
+    const parseResult = registerSchema.safeParse(input);
+    if (!parseResult.success) {
+      const firstError = parseResult.error.errors[0];
+      throw Object.assign(new Error(firstError.message), {
+        statusCode: 400,
+        code: "VALIDATION_ERROR",
+      });
+    }
+    const { email, password, firstName, lastName, role, companyName } =
+      parseResult.data;
 
     // Check if user already exists
     const existingUser = await pool.query(
@@ -54,10 +64,10 @@ export const authService = {
     const passwordHash = await bcrypt.hash(password, 12);
 
     // Create organization first
-    const orgType = role === 'buyer' ? 'buyer' : 'vendor';
+    const orgType = role === "buyer" ? "buyer" : "vendor";
     const orgResult = await pool.query(
       `INSERT INTO organizations (name, type) VALUES ($1, $2) RETURNING id`,
-      [companyName, orgType]
+      [companyName, orgType],
     );
     const organizationId = orgResult.rows[0].id;
 
@@ -97,7 +107,7 @@ export const authService = {
     const { email, password } = input;
 
     const { rows } = await pool.query<UserWithOrg>(
-      `SELECT 
+      `SELECT
         u.id, u.email, u.name, u.password_hash, u.roles, u.is_active, u.created_at, u.updated_at,
         u.organization_id,
         o.name as organization_name,
@@ -147,6 +157,19 @@ export const authService = {
     refreshToken: string;
   }> {
     const { refreshToken } = input;
+
+    // Guard: reject non-UUID values before hitting the DB.
+    // user_tokens.id is a UUID column — passing a JWT string or arbitrary text
+    // causes a Postgres "invalid input syntax for type uuid" error (500).
+    // Return 401 instead so clients see a proper auth failure.
+    const UUID_REGEX =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!refreshToken || !UUID_REGEX.test(refreshToken)) {
+      throw Object.assign(new Error("Invalid refresh token"), {
+        statusCode: 401,
+        code: "UNAUTHORIZED",
+      });
+    }
 
     const { rows } = await pool.query<UserRow & { token_id: string }>(
       `SELECT ut.id as token_id, u.* FROM user_tokens ut
@@ -225,7 +248,7 @@ export const authService = {
     const { token: resetToken, password: newPassword } = input;
 
     const { rows } = await pool.query<TokenRow>(
-      `SELECT * FROM user_tokens 
+      `SELECT * FROM user_tokens
        WHERE id = $1 AND token_type = 'reset' AND expires_at > NOW()`,
       [resetToken],
     );
@@ -254,8 +277,53 @@ export const authService = {
 
     const user = userResult.rows[0];
 
+    // Reject if new password is the same as the current one
+    const isSamePassword = await bcrypt.compare(
+      newPassword,
+      user.password_hash,
+    );
+    if (isSamePassword) {
+      throw Object.assign(
+        new Error("New password must be different from current password"),
+        {
+          statusCode: 400,
+          code: "VALIDATION_ERROR",
+        },
+      );
+    }
+
+    // Reject if new password matches any of the last 5 historical hashes
+    const historyResult = await pool.query<{ password_hash: string }>(
+      `SELECT password_hash FROM password_history
+       WHERE user_id = $1
+       ORDER BY created_at DESC
+       LIMIT 5`,
+      [user.id],
+    );
+
+    for (const row of historyResult.rows) {
+      const matchesHistory = await bcrypt.compare(
+        newPassword,
+        row.password_hash,
+      );
+      if (matchesHistory) {
+        throw Object.assign(
+          new Error(
+            "Password was used recently. Please choose a different password.",
+          ),
+          { statusCode: 400, code: "PASSWORD_HISTORY_VIOLATION" },
+        );
+      }
+    }
+
     // Hash new password
     const passwordHash = await bcrypt.hash(newPassword, 12);
+
+    // Persist the OLD hash into password_history before overwriting
+    await pool.query(
+      `INSERT INTO password_history (user_id, password_hash) VALUES ($1, $2)`,
+      [user.id, user.password_hash],
+    );
 
     // Update password
     await pool.query("UPDATE users SET password_hash = $1 WHERE id = $2", [
@@ -286,6 +354,15 @@ export const authService = {
   },
 
   async logout(refreshToken: string): Promise<void> {
+    // Guard: only query the DB if the value looks like a UUID.
+    // If caller passes a JWT string (e.g., fallback from Authorization header),
+    // the UPDATE would raise a Postgres uuid type error.  Silently skip instead.
+    const UUID_REGEX =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!refreshToken || !UUID_REGEX.test(refreshToken)) {
+      logger.debug("logout: skipped DB invalidation — token is not a UUID");
+      return;
+    }
     await pool.query(
       "UPDATE user_tokens SET expires_at = NOW() WHERE id = $1",
       [refreshToken],
@@ -293,8 +370,26 @@ export const authService = {
     logger.info(`User logged out with token: ${refreshToken}`);
   },
 
-  async getMe(userId: string): Promise<{ id: string; name: string; email: string; roles: string[]; orgId: string; organizationName?: string; organizationType?: OrganizationType }> {
-    const { rows } = await pool.query<{ id: string; name: string; email: string; roles: string[]; organization_id: string; organization_name: string | null; organization_type: OrganizationType | null }>(
+  async getMe(
+    userId: string,
+  ): Promise<{
+    id: string;
+    name: string;
+    email: string;
+    roles: string[];
+    orgId: string;
+    organizationName?: string;
+    organizationType?: OrganizationType;
+  }> {
+    const { rows } = await pool.query<{
+      id: string;
+      name: string;
+      email: string;
+      roles: string[];
+      organization_id: string;
+      organization_name: string | null;
+      organization_type: OrganizationType | null;
+    }>(
       `SELECT u.id, u.name, u.email, u.roles, u.organization_id, o.name as organization_name, o.organization_type
        FROM users u
        LEFT JOIN organizations o ON o.id = u.organization_id
@@ -302,7 +397,10 @@ export const authService = {
       [userId],
     );
     if (rows.length === 0) {
-      throw Object.assign(new Error("User not found"), { statusCode: 404, code: "NOT_FOUND" });
+      throw Object.assign(new Error("User not found"), {
+        statusCode: 404,
+        code: "NOT_FOUND",
+      });
     }
     const row = rows[0];
     return {
@@ -316,22 +414,30 @@ export const authService = {
     };
   },
 
+  async hashPassword(password: string): Promise<string> {
+    return bcrypt.hash(password, 12);
+  },
+
+  async verifyPassword(password: string, hash: string): Promise<boolean> {
+    return bcrypt.compare(password, hash);
+  },
+
   generateAccessToken(user: UserWithOrg): string {
     if (!config.jwtSecret) {
-      throw new Error('JWT_SECRET is not configured');
+      throw new Error("JWT_SECRET is not configured");
     }
-    
+
     const payload = {
       id: user.id,
       email: user.email,
       roles: user.roles,
       organizationId: user.organization_id,
-      organizationType: user.organization_type,  // NEW
+      organizationType: user.organization_type, // NEW
     };
-    
+
     // Convert "15m" to 900 seconds (15 * 60)
     const expiresInSeconds = 15 * 60; // 15 minutes
-    
+
     return jwt.sign(payload, config.jwtSecret, { expiresIn: expiresInSeconds });
   },
 
@@ -339,4 +445,3 @@ export const authService = {
     return uuidv4();
   },
 };
-

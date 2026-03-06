@@ -1,6 +1,3 @@
-// Test setup file for Jest
-// This file runs before all tests
-
 import { config } from 'dotenv';
 
 // Load test environment variables
@@ -9,34 +6,53 @@ config({ path: '.env.test' });
 // Set test environment
 process.env.NODE_ENV = 'test';
 
-// Increase timeout for integration tests
-jest.setTimeout(30000);
+// Increase timeout for integration tests (matches jest.config.js)
+jest.setTimeout(60000);
 
-// Global test utilities
+// Monitor memory usage during tests
+if (process.env.NODE_ENV === 'test') {
+  const originalConsole = console;
+  const memoryLog = () => {
+    const usage = process.memoryUsage();
+    const usedMB = Math.round(usage.heapUsed / 1024 / 1024);
+    const totalMB = Math.round(usage.heapTotal / 1024 / 1024);
+    
+    if (usedMB > 3000) { // Warn if using more than 3GB
+      originalConsole.warn(`⚠️  High memory usage: ${usedMB}MB / ${totalMB}MB`);
+    }
+  };
+  
+  // Log memory every 30 seconds during long-running tests
+  const memoryInterval = setInterval(memoryLog, 30000);
+  
+  // Clear interval when tests complete
+  process.on('exit', () => clearInterval(memoryInterval));
+  process.on('SIGINT', () => clearInterval(memoryInterval));
+  process.on('SIGTERM', () => clearInterval(memoryInterval));
+  
+  // Also clear interval after Jest tests complete
+  afterAll(() => {
+    clearInterval(memoryInterval);
+  });
+}
+
+// Suppress console logs during tests (optional)
 global.console = {
   ...console,
-  // Suppress console logs during tests (uncomment to enable)
   // log: jest.fn(),
   // debug: jest.fn(),
   // info: jest.fn(),
   // warn: jest.fn(),
-  error: console.error, // Keep errors visible
+  error: console.error,
 };
 
-// Mock external services if needed
-beforeAll(async () => {
-  // Setup test database connection
-  // Setup test Redis connection
-  // Any other global setup
-});
+// Global test utilities
+declare global {
+  namespace NodeJS {
+    interface Global {
+      testDb: import('pg').Pool | null;
+      testRedis: import('ioredis').Redis | null;
+    }
+  }
+}
 
-afterAll(async () => {
-  // Close database connections
-  // Close Redis connections
-  // Any other global teardown
-});
-
-// Reset mocks between tests
-afterEach(() => {
-  jest.clearAllMocks();
-});

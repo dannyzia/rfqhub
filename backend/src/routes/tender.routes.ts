@@ -40,6 +40,11 @@ router.post(
   authorize("buyer", "admin"),
   tenderController.cancel,
 );
+router.delete(
+  "/:id",
+  authorize("buyer", "admin"),
+  tenderController.delete,
+);
 
 router.post(
   "/:tenderId/items",

@@ -1,27 +1,27 @@
 /**
  * Test Utilities Index - Section 2 & 3: Test Infrastructure
  * MASTER_TESTING_PLAN_REVISED.md
- * 
+ *
  * Central export point for all test utilities and fixtures
  * Import from this file to access all testing infrastructure
  */
 
 // Setup and configuration
 // Note: setup.ts is imported as a side effect for initialization
-import './setup';
+import "./setup";
 
 // Test data and fixtures
-export * from './test-data';
-export * from './test-fixtures';
+export * from "./test-data";
+export * from "./test-fixtures";
 
 // Request utilities
-export { TestRequest, ResponseMatchers, APIAssertions } from './test-request';
+export { TestRequest, ResponseMatchers, APIAssertions } from "./test-request";
 
 // Database utilities
-export * as TestDB from './test-database';
+export * as TestDB from "./test-database";
 
 // Assertion utilities
-export * as Assertions from './test-assertions';
+export * as Assertions from "./test-assertions";
 
 // Re-export commonly used items at top level
 export {
@@ -33,7 +33,7 @@ export {
   clearTestData,
   generateTestTokens,
   waitFor,
-} from './test-data';
+} from "./test-data";
 
 export {
   createMockUser,
@@ -56,13 +56,6 @@ export {
   createTenderWithItems,
   createBidWithItems,
   createEvaluationWithBids,
-} from './test-fixtures';
+} from "./test-fixtures";
 
-// Global test utilities (available via global.testUtils after setup.ts)
-declare global {
-  var testUtils: {
-    generateTestEmail: () => string;
-    generateTestPassword: () => string;
-    wait: (ms: number) => Promise<void>;
-  };
-}
+// Global test utilities are declared in setup.ts (imported above)

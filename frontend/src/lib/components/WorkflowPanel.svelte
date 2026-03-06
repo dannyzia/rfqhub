@@ -156,7 +156,7 @@
     switch (status) {
       case 'active': return 'bg-green-100 text-green-800';
       case 'completed': return 'bg-blue-100 text-blue-800';
-      'forwarded': return 'bg-purple-100 text-purple-800';
+      case 'forwarded': return 'bg-purple-100 text-purple-800';
       case 'skipped': return 'bg-gray-100 text-gray-800';
       default: return 'bg-yellow-100 text-yellow-800';
     }

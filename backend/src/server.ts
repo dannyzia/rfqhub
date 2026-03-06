@@ -1,3 +1,4 @@
+import './instrument'; // MUST be first
 import app from './app';
 import { logger } from './config/logger';
 import { config } from './config';

@@ -10,7 +10,8 @@ export const validate = (schema: AnyZodObject | ZodEffects<any>) => {
     next: NextFunction,
   ): Promise<void> => {
     try {
-      await schema.parseAsync(req.body);
+      // Parse AND assign back so Zod defaults/transforms are applied to req.body
+      req.body = await schema.parseAsync(req.body);
       next();
     } catch (error) {
       if (error instanceof ZodError) {

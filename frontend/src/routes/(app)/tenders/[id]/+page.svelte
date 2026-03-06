@@ -71,7 +71,7 @@
 </script>
 
 <svelte:head>
-  <title>{#if tenderQuery.data?.title}{tenderQuery.data?.title} - RFQ Buddy</title>
+  <title>{tenderQuery.data?.title || 'Tender Details'} - RFQ Buddy</title>
 </svelte:head>
 
 {#if tenderQuery.isLoading}
@@ -82,9 +82,12 @@
         <p class="chaingpt-text-muted">Loading tender details...</p>
       </div>
     </div>
+  </div>
   {:else if tenderQuery.error}
-    <div class="chaingpt-card" style="background-color: var(--color-danger-light); border: 1px solid var(--color-danger);">
-      <p class="chaingpt-text" style="color: var(--color-danger);">Error loading tender. Please try again.</p>
+    <div class="chaingpt-container chaingpt-py-4">
+      <div class="chaingpt-card" style="background-color: var(--color-danger-light); border: 1px solid var(--color-danger);">
+        <p class="chaingpt-text" style="color: var(--color-danger);">Error loading tender. Please try again.</p>
+      </div>
     </div>
   {:else if tenderQuery.data}
   <div class="chaingpt-animate-fade">
@@ -250,5 +253,5 @@
         Back to Tenders
       </a>
     </div>
-  {/if}
-</div>
+  </div>
+{/if}

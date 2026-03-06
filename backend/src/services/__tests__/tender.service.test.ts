@@ -69,38 +69,53 @@ describe('TenderService', () => {
     it('should return tenders for buyer with their own tenders', async () => {
       const mockDatabase = require('../../config/database');
       
+      // Mock the data query
       mockDatabase.pool.query.mockResolvedValueOnce({ 
         rows: [
           { id: 'tender-001', title: 'Tender 1', buyer_org_id: 'org-001' },
           { id: 'tender-002', title: 'Tender 2', buyer_org_id: 'org-001' }
         ]
       });
+      
+      // Mock the count query
+      mockDatabase.pool.query.mockResolvedValueOnce({ 
+        rows: [{ total: '2' }]
+      });
 
       const result = await tenderService.findAll('org-001', 'buyer');
 
-      expect(result).toHaveLength(2);
-      expect(result[0].buyer_org_id).toBe('org-001');
+      expect(result.rows).toHaveLength(2);
+      expect(result.rows[0].buyer_org_id).toBe('org-001');
+      expect(result.total).toBe(2);
     });
 
     it('should return published tenders for vendor', async () => {
       const mockDatabase = require('../../config/database');
       
+      // Mock the data query
       mockDatabase.pool.query.mockResolvedValueOnce({ 
         rows: [
           { id: 'tender-001', title: 'Published Tender 1', status: 'published' },
           { id: 'tender-002', title: 'Published Tender 2', status: 'published' }
         ]
       });
+      
+      // Mock the count query
+      mockDatabase.pool.query.mockResolvedValueOnce({ 
+        rows: [{ total: '2' }]
+      });
 
       const result = await tenderService.findAll('org-002', 'vendor');
 
-      expect(result).toHaveLength(2);
-      expect(result.every((t: any) => t.status === 'published')).toBe(true);
+      expect(result.rows).toHaveLength(2);
+      expect(result.rows.every((t: any) => t.status === 'published')).toBe(true);
+      expect(result.total).toBe(2);
     });
 
     it('should return all tenders for admin', async () => {
       const mockDatabase = require('../../config/database');
       
+      // Mock the data query
       mockDatabase.pool.query.mockResolvedValueOnce({ 
         rows: [
           { id: 'tender-001', title: 'Tender 1', status: 'draft' },
@@ -108,10 +123,16 @@ describe('TenderService', () => {
           { id: 'tender-003', title: 'Tender 3', status: 'closed' }
         ]
       });
+      
+      // Mock the count query
+      mockDatabase.pool.query.mockResolvedValueOnce({ 
+        rows: [{ total: '3' }]
+      });
 
       const result = await tenderService.findAll('user-001', 'admin');
 
-      expect(result).toHaveLength(3);
+      expect(result.rows).toHaveLength(3);
+      expect(result.total).toBe(3);
     });
   });
 

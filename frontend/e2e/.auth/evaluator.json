@@ -1,0 +1,1 @@
+{"cookies": [], "origins": [{"origin": "http://localhost:5173", "localStorage": [{"name": "accessToken", "value": "mock-evaluator-token"}, {"name": "refreshToken", "value": "mock-refresh-token"}, {"name": "userRole", "value": "evaluator"}, {"name": "userEmail", "value": "evaluator@test.com"}]}]}

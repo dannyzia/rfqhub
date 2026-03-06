@@ -44,15 +44,12 @@ afterAll(() => {
 
 // Global test utilities
 declare global {
-  namespace NodeJS {
-    interface Global {
-      testUtils: {
-        generateTestEmail: () => string;
-        generateTestPassword: () => string;
-        wait: (ms: number) => Promise<void>;
-      };
-    }
-  }
+  // eslint-disable-next-line no-var
+  var testUtils: {
+    generateTestEmail: () => string;
+    generateTestPassword: () => string;
+    wait: (ms: number) => Promise<void>;
+  };
 }
 
 // Test utilities

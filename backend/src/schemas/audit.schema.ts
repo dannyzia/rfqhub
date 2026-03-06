@@ -22,6 +22,9 @@ export const auditActionEnum = z.enum([
   'USER_REGISTERED',
   'EXPORT_REQUESTED',
   'EXPORT_COMPLETED',
+  'TAX_RATE_CREATED',
+  'TAX_RATE_UPDATED',
+  'TAX_RATE_DELETED',
 ]);
 
 export const auditEntityTypeEnum = z.enum([
@@ -34,6 +37,7 @@ export const auditEntityTypeEnum = z.enum([
   'evaluation',
   'award',
   'export',
+  'tax_rate',
 ]);
 
 export const auditFilterSchema = z.object({

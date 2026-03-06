@@ -1,13 +1,13 @@
 // backend/src/controllers/documentUpload.controller.ts
 // Description: Handle document uploads for tender submissions
 
-import { Request, Response, NextFunction } from 'express';
-import multer from 'multer';
-import path from 'path';
-import { v4 as uuidv4 } from 'uuid';
-import { pool } from '../config/database';
-import logger from '../config/logger';
-import fs from 'fs';
+import { Request, Response, NextFunction } from "express";
+import multer from "multer";
+import path from "path";
+import { v4 as uuidv4 } from "uuid";
+import { pool } from "../config/database";
+import logger from "../config/logger";
+import fs from "fs";
 
 // Extend Express Request to include file property
 declare global {
@@ -19,7 +19,7 @@ declare global {
 }
 
 // Ensure uploads directory exists
-const uploadDir = process.env.UPLOAD_DIR || './uploads/tender-documents';
+const uploadDir = process.env.UPLOAD_DIR || "./uploads/tender-documents";
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
@@ -35,18 +35,35 @@ const storage = multer.diskStorage({
   filename: (_req: any, file: any, cb: any): void => {
     const uniqueName = `${uuidv4()}${path.extname(file.originalname)}`;
     cb(null, uniqueName);
-  }
+  },
 });
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const fileFilter = (_req: any, file: any, cb: multer.FileFilterCallback): void => {
-  const allowedTypes = ['.pdf', '.doc', '.docx', '.jpg', '.jpeg', '.png', '.xls', '.xlsx'];
+const fileFilter = (
+  _req: any,
+  file: any,
+  cb: multer.FileFilterCallback,
+): void => {
+  const allowedTypes = [
+    ".pdf",
+    ".doc",
+    ".docx",
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".xls",
+    ".xlsx",
+  ];
   const ext = path.extname(file.originalname).toLowerCase();
 
   if (allowedTypes.includes(ext)) {
     cb(null, true);
   } else {
-    cb(new Error(`File type ${ext} not allowed. Allowed: ${allowedTypes.join(', ')}`));
+    cb(
+      new Error(
+        `File type ${ext} not allowed. Allowed: ${allowedTypes.join(", ")}`,
+      ),
+    );
   }
 };
 
@@ -54,30 +71,41 @@ export const upload = multer({
   storage,
   fileFilter,
   limits: {
-    fileSize: 10 * 1024 * 1024 // 10MB limit
-  }
+    fileSize: 10 * 1024 * 1024, // 10MB limit
+  },
 });
 
 /**
  * POST /api/tenders/:tenderId/documents/upload
  * Upload a document for a specific requirement
  */
-export async function uploadDocument(req: Request, res: Response, next: NextFunction): Promise<void> {
+export async function uploadDocument(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
   const client = await pool.connect();
 
   try {
     const { tenderId } = req.params;
     const { documentRequirementId } = req.body;
-    // @ts-ignore
+
+    if (!req.user) {
+      res.status(401).json({
+        success: false,
+        error: { code: "UNAUTHORIZED", message: "Authentication required" },
+      });
+      return;
+    }
+
     const vendorOrgId = req.user.orgId;
-    // @ts-ignore
     const userId = req.user.id;
     const uploadedFile = req.file;
 
     if (!uploadedFile) {
       res.status(400).json({
         success: false,
-        error: { code: 'NO_FILE', message: 'No file uploaded' }
+        error: { code: "NO_FILE", message: "No file uploaded" },
       });
       return;
     }
@@ -85,24 +113,27 @@ export async function uploadDocument(req: Request, res: Response, next: NextFunc
     if (!vendorOrgId) {
       res.status(403).json({
         success: false,
-        error: { code: 'NO_ORG', message: 'User must belong to an organization' }
+        error: {
+          code: "NO_ORG",
+          message: "User must belong to an organization",
+        },
       });
       return;
     }
 
-    await client.query('BEGIN');
+    await client.query("BEGIN");
 
     // Step 1: Verify tender exists and is accepting submissions
     const tenderCheck = await client.query(
       `SELECT id, status, submission_deadline FROM tenders WHERE id = $1`,
-      [tenderId]
+      [tenderId],
     );
 
     if (tenderCheck.rows.length === 0) {
-      await client.query('ROLLBACK');
+      await client.query("ROLLBACK");
       res.status(404).json({
         success: false,
-        error: { code: 'TENDER_NOT_FOUND', message: 'Tender not found' }
+        error: { code: "TENDER_NOT_FOUND", message: "Tender not found" },
       });
       return;
     }
@@ -110,19 +141,25 @@ export async function uploadDocument(req: Request, res: Response, next: NextFunc
     const tender = tenderCheck.rows[0];
 
     if (new Date(tender.submission_deadline) < new Date()) {
-      await client.query('ROLLBACK');
+      await client.query("ROLLBACK");
       res.status(400).json({
         success: false,
-        error: { code: 'DEADLINE_PASSED', message: 'Submission deadline has passed' }
+        error: {
+          code: "DEADLINE_PASSED",
+          message: "Submission deadline has passed",
+        },
       });
       return;
     }
 
-    if (!['open', 'published'].includes(tender.status)) {
-      await client.query('ROLLBACK');
+    if (!["open", "published"].includes(tender.status)) {
+      await client.query("ROLLBACK");
       res.status(400).json({
         success: false,
-        error: { code: 'TENDER_NOT_OPEN', message: 'Tender is not accepting submissions' }
+        error: {
+          code: "TENDER_NOT_OPEN",
+          message: "Tender is not accepting submissions",
+        },
       });
       return;
     }
@@ -130,14 +167,17 @@ export async function uploadDocument(req: Request, res: Response, next: NextFunc
     // Step 2: Verify document requirement exists
     const reqCheck = await client.query(
       `SELECT id, is_mandatory FROM tender_type_document_requirements WHERE id = $1`,
-      [documentRequirementId]
+      [documentRequirementId],
     );
 
     if (reqCheck.rows.length === 0) {
-      await client.query('ROLLBACK');
+      await client.query("ROLLBACK");
       res.status(404).json({
         success: false,
-        error: { code: 'REQUIREMENT_NOT_FOUND', message: 'Document requirement not found' }
+        error: {
+          code: "REQUIREMENT_NOT_FOUND",
+          message: "Document requirement not found",
+        },
       });
       return;
     }
@@ -146,7 +186,7 @@ export async function uploadDocument(req: Request, res: Response, next: NextFunc
     const existingSubmission = await client.query(
       `SELECT id FROM tender_document_submissions
        WHERE tender_id = $1 AND vendor_org_id = $2 AND document_requirement_id = $3`,
-      [tenderId, vendorOrgId, documentRequirementId]
+      [tenderId, vendorOrgId, documentRequirementId],
     );
 
     let submissionId: string;
@@ -165,8 +205,8 @@ export async function uploadDocument(req: Request, res: Response, next: NextFunc
           uploadedFile.size,
           uploadedFile.mimetype,
           userId,
-          submissionId
-        ]
+          submissionId,
+        ],
       );
     } else {
       // Insert new
@@ -186,8 +226,8 @@ export async function uploadDocument(req: Request, res: Response, next: NextFunc
           uploadedFile.path,
           uploadedFile.size,
           uploadedFile.mimetype,
-          userId
-        ]
+          userId,
+        ],
       );
     }
 
@@ -202,12 +242,12 @@ export async function uploadDocument(req: Request, res: Response, next: NextFunc
           tenderId,
           documentRequirementId,
           filename: uploadedFile.originalname,
-          fileSize: uploadedFile.size
-        })
-      ]
+          fileSize: uploadedFile.size,
+        }),
+      ],
     );
 
-    await client.query('COMMIT');
+    await client.query("COMMIT");
 
     // Log successful upload
     if (logger) {
@@ -223,19 +263,20 @@ export async function uploadDocument(req: Request, res: Response, next: NextFunc
       data: {
         id: submissionId,
         filename: uploadedFile.originalname,
-        uploadedAt: new Date().toISOString()
-      }
+        uploadedAt: new Date().toISOString(),
+      },
     });
-
   } catch (error) {
     try {
-      await client.query('ROLLBACK');
+      await client.query("ROLLBACK");
     } catch (_err) {
       // Ignore rollback errors
     }
     if (logger) {
       try {
-        logger.error(`Document upload failed: ${error instanceof Error ? error.message : String(error)}`);
+        logger.error(
+          `Document upload failed: ${error instanceof Error ? error.message : String(error)}`,
+        );
       } catch (_e) {
         // Ignore logger errors
       }
@@ -250,23 +291,38 @@ export async function uploadDocument(req: Request, res: Response, next: NextFunc
  * DELETE /api/tenders/:tenderId/documents/:submissionId
  * Remove an uploaded document
  */
-export async function deleteDocument(req: Request, res: Response, next: NextFunction): Promise<void> {
+export async function deleteDocument(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
   try {
     const { tenderId, submissionId } = req.params;
-    // @ts-ignore
+
+    if (!req.user) {
+      res.status(401).json({
+        success: false,
+        error: { code: "UNAUTHORIZED", message: "Authentication required" },
+      });
+      return;
+    }
+
     const vendorOrgId = req.user.orgId;
 
     const result = await pool.query(
       `DELETE FROM tender_document_submissions
        WHERE id = $1 AND tender_id = $2 AND vendor_org_id = $3
        RETURNING id, filename`,
-      [submissionId, tenderId, vendorOrgId]
+      [submissionId, tenderId, vendorOrgId],
     );
 
     if (result.rows.length === 0) {
       res.status(404).json({
         success: false,
-        error: { code: 'NOT_FOUND', message: 'Document not found or not authorized' }
+        error: {
+          code: "NOT_FOUND",
+          message: "Document not found or not authorized",
+        },
       });
       return;
     }
@@ -282,13 +338,14 @@ export async function deleteDocument(req: Request, res: Response, next: NextFunc
 
     res.json({
       success: true,
-      message: 'Document deleted successfully'
+      message: "Document deleted successfully",
     });
-
   } catch (error) {
     if (logger) {
       try {
-        logger.error(`Document deletion failed: ${error instanceof Error ? error.message : String(error)}`);
+        logger.error(
+          `Document deletion failed: ${error instanceof Error ? error.message : String(error)}`,
+        );
       } catch (_e) {
         // Ignore logger errors
       }

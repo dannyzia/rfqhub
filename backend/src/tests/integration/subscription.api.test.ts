@@ -20,7 +20,7 @@ describe('Section 5.10: Subscription API Integration Tests', () => {
   let adminToken: string;
   let buyerToken: string;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     await clearTestData();
 
     const admin = await createTestUser({ role: 'admin' });

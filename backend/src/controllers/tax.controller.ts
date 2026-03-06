@@ -5,9 +5,17 @@ import {
   createTaxRuleSchema,
   updateTaxRuleSchema,
   taxFilterSchema,
+  createTaxRateSchema,
+  updateTaxRateSchema,
+  taxRateFilterSchema,
+  calculateTaxSchema,
 } from "../schemas/tax.schema";
 
 export const taxController = {
+  // ------------------------------------------------------------------------
+  // TAX RULES METHODS (existing - procurement type-based)
+  // ------------------------------------------------------------------------
+
   async createTaxRule(
     req: Request,
     res: Response,
@@ -118,6 +126,146 @@ export const taxController = {
       const result = await taxService.calculateBidItemTaxes(bidId, tenderId);
 
       res.json(result);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  // ------------------------------------------------------------------------
+  // TAX RATES METHODS (new - jurisdiction-based with Redis caching)
+  // ------------------------------------------------------------------------
+
+  async createTaxRate(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const validated = createTaxRateSchema.parse(req.body);
+      const taxRate = await taxService.createTaxRate(validated, req.user?.id);
+
+      res.status(201).json(taxRate);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async updateTaxRate(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const { taxRateId } = req.params;
+      const validated = updateTaxRateSchema.parse(req.body);
+      const taxRate = await taxService.updateTaxRate(taxRateId, validated, req.user?.id);
+
+      res.json(taxRate);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async getTaxRate(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const { taxRateId } = req.params;
+      const taxRate = await taxService.getTaxRateById(taxRateId);
+
+      if (!taxRate) {
+        res.status(404).json({
+          error: { code: "NOT_FOUND", message: "Tax rate not found" },
+        });
+        return;
+      }
+
+      res.json(taxRate);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async listTaxRates(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const filter = taxRateFilterSchema.parse(req.query);
+      const taxRates = await taxService.listTaxRates(filter);
+
+      res.json({ taxRates });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async getTaxRateForJurisdiction(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const { country, state, taxType } = req.query as {
+        country?: string;
+        state?: string;
+        taxType?: string;
+      };
+
+      if (!country) {
+        res.status(400).json({
+          error: { code: "VALIDATION_ERROR", message: "country query parameter is required" },
+        });
+        return;
+      }
+
+      const taxRate = await taxService.getTaxRateForJurisdiction(
+        country.toUpperCase(),
+        state?.toUpperCase(),
+        taxType,
+      );
+
+      if (!taxRate) {
+        res.status(404).json({
+          error: { code: "NOT_FOUND", message: "Tax rate not found for this jurisdiction" },
+        });
+        return;
+      }
+
+      res.json(taxRate);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async calculateTax(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const validated = calculateTaxSchema.parse(req.body);
+      const result = await taxService.calculateTax(validated);
+
+      res.json(result);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async deleteTaxRate(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const { taxRateId } = req.params;
+      await taxService.deleteTaxRate(taxRateId, req.user?.id);
+
+      res.json({ message: "Tax rate deleted successfully" });
     } catch (error) {
       next(error);
     }

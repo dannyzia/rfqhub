@@ -13,7 +13,9 @@ declare global {
         roles: string[];
         companyId?: string;
         orgId: string;
-        organizationType?: OrganizationType;  // NEW
+        /** Canonical camelCase alias for organization_id, used by subscription/storage controllers */
+        organizationId?: string;
+        organizationType?: OrganizationType;
       };
     }
   }

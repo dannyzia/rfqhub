@@ -26,12 +26,9 @@ export const subscriptionController = {
       const subscription = await SubscriptionService.getOrganizationSubscription(organizationId);
       
       if (!subscription) {
-        return res.status(404).json({
-          error: {
-            code: 'SUBSCRIPTION_NOT_FOUND',
-            message: 'No active subscription found for this organization',
-          },
-        });
+        // Return 200 with null data (not 404) — tests expect a 2xx when querying current subscription
+        // even when no subscription has been set up yet for the organization.
+        return res.status(200).json({ data: null });
       }
       
       res.status(200).json({

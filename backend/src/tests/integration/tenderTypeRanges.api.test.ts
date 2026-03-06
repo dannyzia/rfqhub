@@ -12,7 +12,7 @@ describe('GET /api/tender-types/ranges', () => {
         .post('/api/auth/register')
         .send({
           email: 'buyer@test.com',
-          password: 'Test@1234',
+          password: 'TestPerf@123456',
           firstName: 'Test',
           lastName: 'Buyer',
           role: 'buyer',
@@ -25,7 +25,7 @@ describe('GET /api/tender-types/ranges', () => {
         // If registration fails, try login (user might exist)
         const loginRes = await request(app)
           .post('/api/auth/login')
-          .send({ email: 'buyer@test.com', password: 'Test@1234' });
+          .send({ email: 'buyer@test.com', password: 'TestPerf@123456' });
         authToken = loginRes.body?.data?.accessToken;
       }
 

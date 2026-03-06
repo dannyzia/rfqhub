@@ -13,7 +13,7 @@ export const registerSchema = z.object({
     .string({
       required_error: 'Password is required',
     })
-    .min(8, 'Password must be at least 8 characters')
+    .min(12, 'Password must be at least 12 characters')
     .max(100, 'Password must not exceed 100 characters')
     .regex(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
@@ -99,7 +99,7 @@ export const resetPasswordSchema = z.object({
     .string({
       required_error: 'Password is required',
     })
-    .min(8, 'Password must be at least 8 characters')
+    .min(12, 'Password must be at least 12 characters')
     .max(100, 'Password must not exceed 100 characters')
     .regex(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,

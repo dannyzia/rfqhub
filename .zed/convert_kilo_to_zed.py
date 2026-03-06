@@ -144,6 +144,26 @@ def get_model_for_mode(mode_slug: str, kilo_settings: Dict) -> Dict[str, str]:
 
 def add_rfq_buddy_rules(instructions: str) -> str:
     """Append RFQ Buddy-specific rules to instructions"""
+    # Try to read the auto-context file
+    context_file = PROJECT_ROOT / "AGENT_AUTO_CONTEXT.md"
+    if context_file.exists():
+        try:
+            with open(context_file, 'r', encoding='utf-8') as f:
+                rules_content = f.read().strip()
+            # Add a header to distinguish from existing instructions
+            rules_appendix = f"""
+
+### RFQ Buddy Project Rules (MANDATORY - Auto-loaded from AGENT_AUTO_CONTEXT.md)
+
+{rules_content}
+"""
+            return (instructions or "").strip() + rules_appendix
+        except Exception as e:
+            print(f"Warning: Could not read AGENT_AUTO_CONTEXT.md: {e}")
+            # Fall back to hardcoded rules
+            pass
+    
+    # Fallback to hardcoded rules if file not found or error
     rules_appendix = """
 
 ### RFQ Buddy Project Rules (MANDATORY)
@@ -228,7 +248,7 @@ def main():
         
         profile = convert_mode_to_profile(mode_data, kilo_settings)
         profiles[slug] = profile
-        print(f"  ✓ Converted {slug}")
+        print(f"  [OK] Converted {slug}")
     
     # Output JSON for Zed settings.json
     output = {
@@ -243,8 +263,8 @@ def main():
     with open(output_file, "w") as f:
         json.dump(output, f, indent=2)
     
-    print(f"\n✅ Generated {len(profiles)} profiles")
-    print(f"📄 Output: {output_file}")
+    print(f"\n[SUCCESS] Generated {len(profiles)} profiles")
+    print(f"[FILE] Output: {output_file}")
     print("\nNext steps:")
     print("1. Copy the 'profiles' section from generated-profiles.json")
     print("2. Merge into your ~/.config/zed/settings.json under agent.profiles")

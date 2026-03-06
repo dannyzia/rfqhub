@@ -73,6 +73,58 @@ router.post(
 );
 
 // ============================================================================
+// ADMIN CRUD ENDPOINTS (for Phase 7 testing)
+// ============================================================================
+
+/**
+ * POST /api/tender-types
+ * Create a new tender type (admin only)
+ */
+router.post('/', tenderTypeController.create);
+
+/**
+ * PUT /api/tender-types/:id
+ * Update an existing tender type (admin only)
+ */
+router.put('/:id', tenderTypeController.update);
+
+/**
+ * DELETE /api/tender-types/:id
+ * Delete a tender type (admin only)
+ */
+router.delete('/:id', tenderTypeController.deleteTenderType);
+
+/**
+ * POST /api/tender-types/:id/activate
+ * Activate a tender type (admin only)
+ */
+router.post('/:id/activate', tenderTypeController.activate);
+
+/**
+ * POST /api/tender-types/:id/deactivate
+ * Deactivate a tender type (admin only)
+ */
+router.post('/:id/deactivate', tenderTypeController.deactivate);
+
+/**
+ * POST /api/tender-types/bulk
+ * Bulk create tender types (admin only)
+ */
+router.post('/bulk', tenderTypeController.bulkCreate);
+
+/**
+ * GET /api/tender-types/categories
+ * List tender type categories
+ */
+router.get('/categories', tenderTypeController.listCategories);
+
+/**
+ * GET /api/tender-types/:id/statistics
+ * Get tender type statistics
+ */
+router.get('/:id/statistics', tenderTypeController.getStatistics);
+
+// ============================================================================
 // DOCUMENT REQUIREMENTS ENDPOINTS
 // ============================================================================
 

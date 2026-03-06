@@ -75,8 +75,9 @@ describe('Health Check Endpoints', () => {
     });
 
     it('should include proper error response format', async () => {
+      // /api/* endpoints require auth; use a truly non-existent top-level path instead
       const response = await request(app)
-        .get('/api/invalid-endpoint')
+        .get('/nonexistent-path-xyz')
         .expect(404);
 
       expect(response.body).toMatchObject({
@@ -102,8 +103,10 @@ describe('Health Check Endpoints', () => {
 
   describe('CORS Headers', () => {
     it('should include CORS headers', async () => {
+      // CORS headers only appear when an Origin header is present in the request
       const response = await request(app)
         .get('/health')
+        .set('Origin', 'http://localhost:5173')
         .expect(200);
 
       expect(response.headers).toHaveProperty('access-control-allow-origin');

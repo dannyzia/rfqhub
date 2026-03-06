@@ -299,7 +299,7 @@
                   </div>
                 {:else if field.type === 'rating'}
                   <div class="flex items-center space-x-2">
-                    {[1, 2, 3, 4, 5].map(rating => (
+                    {#each [1, 2, 3, 4, 5] as rating}
                       <label class="flex items-center">
                         <input
                           type="radio"
@@ -309,7 +309,7 @@
                         />
                         <span class="text-sm">{rating}</span>
                       </label>
-                    ))}
+                    {/each}
                   </div>
                 {/if}
               </div>

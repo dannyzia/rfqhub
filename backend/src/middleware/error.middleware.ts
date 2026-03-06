@@ -88,13 +88,17 @@ export const errorHandler = (
   }
 
   // Check for statusCode property on any error (for errors created with Object.assign)
-  if ('statusCode' in err && typeof (err as any).statusCode === 'number') {
+  if ("statusCode" in err && typeof (err as any).statusCode === "number") {
     statusCode = (err as any).statusCode;
     isOperational = true;
   }
 
   // Check for code property on any error
-  if ('code' in err && typeof (err as any).code === 'string' && !code.startsWith('INTERNAL_')) {
+  if (
+    "code" in err &&
+    typeof (err as any).code === "string" &&
+    !code.startsWith("INTERNAL_")
+  ) {
     code = (err as any).code;
   }
 

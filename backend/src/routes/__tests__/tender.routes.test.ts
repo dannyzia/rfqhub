@@ -11,6 +11,7 @@ jest.mock('../../controllers/tender.controller', () => ({
     update: jest.fn(),
     publish: jest.fn(),
     cancel: jest.fn(),
+    delete: jest.fn(),
   },
 }));
 
@@ -93,6 +94,10 @@ describe('Tender Routes', () => {
     (tenderController.cancel as jest.Mock).mockImplementation((req: any, res: any) => {
       res.json({ data: { id: req.params.id, status: 'cancelled' } });
     });
+
+    (tenderController.delete as jest.Mock).mockImplementation((_req: any, res: any) => {
+      res.json({ data: { message: 'Tender deleted successfully' } });
+    });
   });
 
   describe('Tender Creation and Listing', () => {
@@ -144,6 +149,13 @@ describe('Tender Routes', () => {
 
       expect(response.status).toBe(200);
       expect(tenderController.cancel).toHaveBeenCalled();
+    });
+
+    it('DELETE /:id should delete tender', async () => {
+      const response = await request(app).delete('/tenders/tender-001');
+
+      expect(response.status).toBe(200);
+      expect(tenderController.delete).toHaveBeenCalled();
     });
   });
 

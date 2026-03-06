@@ -1,6 +1,20 @@
 // backend/src/services/__tests__/securityCalculation.service.test.ts
+//
+// The service calls tenderTypeSelector.service.getTenderTypeByCode(), which
+// queries the real DB.  We mock pool.query here to supply canonical test data
+// from the shared fixture so no real database is needed.
 
 import * as securityService from '../securityCalculation.service';
+import { buildTenderTypeQueryMock } from './__fixtures__/tenderTypeMocks';
+
+// ── Mock pool BEFORE importing the service ───────────────────────────────────
+jest.mock('../../config/database');
+
+// ── Set up pool.query mock before each test ──────────────────────────────────
+beforeEach(() => {
+  const pool = require('../../config/database').default;
+  pool.query.mockImplementation(buildTenderTypeQueryMock());
+});
 
 describe('Security Calculation Service', () => {
 

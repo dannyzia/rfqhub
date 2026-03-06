@@ -342,3 +342,13 @@ export function formatChecklistDisplay(checklist: ChecklistStatus): string {
 
   return lines.join('\n');
 }
+
+// Compatibility export for tests
+export const documentChecklistService = {
+  getDocumentRequirements,
+  getTenderChecklist,
+  recordDocumentSubmission,
+  verifyDocument,
+  getMissingMandatoryDocuments,
+  formatChecklistDisplay,
+};

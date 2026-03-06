@@ -37,6 +37,37 @@ export interface LiveBidUpdate {
   createdAt: Date;
 }
 
+function transformSession(row: any): LiveTenderingSession {
+  return {
+    id: row.id,
+    tenderId: row.tender_id,
+    scheduledStart: new Date(row.scheduled_start),
+    scheduledEnd: new Date(row.scheduled_end),
+    actualStart: row.actual_start ? new Date(row.actual_start) : undefined,
+    actualEnd: row.actual_end ? new Date(row.actual_end) : undefined,
+    status: row.status,
+    biddingType: row.bidding_type,
+    currentBestBidId: row.current_best_bid_id || undefined,
+    totalBidsSubmitted: row.total_bids_submitted || 0,
+    settings: typeof row.settings === 'string' ? JSON.parse(row.settings) : (row.settings || {}),
+    limitedVendors: row.limited_vendors || [],
+    createdAt: row.created_at ? new Date(row.created_at) : new Date(),
+    updatedAt: row.updated_at ? new Date(row.updated_at) : new Date(),
+  };
+}
+
+function transformBidUpdate(row: any): LiveBidUpdate {
+  return {
+    id: row.id,
+    sessionId: row.session_id,
+    bidId: row.bid_id || undefined,
+    vendorOrgId: row.vendor_org_id,
+    eventType: row.event_type,
+    eventData: typeof row.event_data === 'string' ? JSON.parse(row.event_data) : row.event_data,
+    createdAt: new Date(row.created_at),
+  };
+}
+
 export const liveTenderingService = {
   /**
    * Create a new live tendering session
@@ -138,7 +169,7 @@ export const liveTenderingService = {
       biddingType: validatedData.biddingType
     });
     
-    return session;
+    return transformSession(session);
   },
   
   /**
@@ -170,7 +201,7 @@ export const liveTenderingService = {
       JSON.stringify(session)
     );
     
-    return session;
+    return transformSession(session);
   },
   
   /**
@@ -202,7 +233,7 @@ export const liveTenderingService = {
       JSON.stringify(session)
     );
     
-    return session;
+    return transformSession(session);
   },
   
   /**
@@ -238,7 +269,7 @@ export const liveTenderingService = {
       actualStart: session.actualStart?.toISOString()
     });
     
-    return session;
+    return transformSession(session);
   },
   
   /**
@@ -275,7 +306,7 @@ export const liveTenderingService = {
       totalBids: session.totalBidsSubmitted
     });
     
-    return session;
+    return transformSession(session);
   },
   
   /**
@@ -309,7 +340,7 @@ export const liveTenderingService = {
     // Publish session cancelled event
     await this.publishSessionEvent(sessionId, 'session_cancelled', {});
     
-    return session;
+    return transformSession(session);
   },
   
   /**
@@ -339,7 +370,7 @@ export const liveTenderingService = {
       eventData
     });
     
-    return update;
+    return transformBidUpdate(update);
   },
   
   /**
@@ -354,7 +385,7 @@ export const liveTenderingService = {
       [sessionId, limit]
     );
     
-    return result.rows;
+    return result.rows.map(transformBidUpdate);
   },
   
   /**
@@ -430,7 +461,7 @@ export const liveTenderingService = {
        ORDER BY scheduled_start ASC`
     );
     
-    return result.rows;
+    return result.rows.map(transformSession);
   },
   
   /**

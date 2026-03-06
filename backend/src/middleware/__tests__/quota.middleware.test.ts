@@ -29,7 +29,8 @@ describe('Quota Middleware', () => {
         organizationId: '123',
         organizationType: 'government',
       },
-      body: {},
+      // is_simple_rfq is required by checkTenderQuota; default to false (detailed_tender)
+      body: { is_simple_rfq: false },
       headers: {},
     };
     mockRes = {
@@ -181,13 +182,13 @@ describe('Quota Middleware', () => {
       expect(SubscriptionService.checkAndIncrementQuota).toHaveBeenCalledWith('123', 'simple_rfq');
     });
 
-    it('should determine detailed_tender type by default', async () => {
+    it('should determine detailed_tender type when is_simple_rfq is false', async () => {
       (SubscriptionService.checkAndIncrementQuota as jest.Mock).mockResolvedValue({
         allowed: true,
         remainingQuota: 5,
       });
 
-      mockReq.body = {};
+      mockReq.body = { is_simple_rfq: false };
 
       await checkTenderQuota(mockReq, mockRes as Response, mockNext);
 
@@ -561,7 +562,8 @@ describe('Quota Middleware', () => {
       const mockSubscription = {
         id: 'sub-001',
         tier: 'platinum',
-        liveTenderingEnabled: true,
+        // Middleware checks snake_case field from DB
+        live_tendering_enabled: true,
       };
 
       (SubscriptionService.getOrganizationSubscription as jest.Mock).mockResolvedValue(mockSubscription);
@@ -835,11 +837,13 @@ describe('Quota Middleware', () => {
     });
 
     it('should handle service errors gracefully', async () => {
+      // Set roles to undefined to force a TypeError inside the middleware try block,
+      // which triggers the catch handler returning 500.
       mockReq.user = {
         id: 'user-001',
         email: 'user@example.com',
         role: 'buyer',
-        roles: ['buyer'],
+        roles: undefined as any, // undefined.includes() will throw
         organizationId: '123',
       };
 

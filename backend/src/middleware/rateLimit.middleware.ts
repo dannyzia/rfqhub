@@ -1,4 +1,3 @@
-/// <reference path="../types/express.d.ts" />
 import { Request, Response, NextFunction } from "express";
 import { redisClient, logger } from "../config";
 import { config } from "../config";
@@ -52,7 +51,7 @@ export const createRateLimiter = (config: RateLimitConfig) => {
 
         // Add Retry-After header (required by HTTP spec)
         res.setHeader("Retry-After", ttl);
-        
+
         res.status(429).json({
           success: false,
           error: {
@@ -79,14 +78,14 @@ export const createRateLimiter = (config: RateLimitConfig) => {
 // General API rate limiter: Very lenient in development
 export const generalRateLimiter = createRateLimiter({
   windowMs: 60 * 1000, // 1 minute
-  maxRequests: config.nodeEnv === 'development' ? 10000 : 200, // 10k/min dev, 200/min prod
+  maxRequests: config.nodeEnv === "development" ? 10000 : 200, // 10k/min dev, 200/min prod
   message: "Too many requests. Please wait before making more requests.",
 });
 
 // Login rate limiter: Very lenient in development, strict in production
 export const loginRateLimiter = createRateLimiter({
-  windowMs: config.nodeEnv === 'development' ? 60 * 1000 : 15 * 60 * 1000, // 1 min dev, 15 min prod
-  maxRequests: config.nodeEnv === 'development' ? 1000 : 10, // 1000/min dev, 10/15min prod
+  windowMs: config.nodeEnv === "development" ? 60 * 1000 : 15 * 60 * 1000, // 1 min dev, 15 min prod
+  maxRequests: config.nodeEnv === "development" ? 1000 : 10, // 1000/min dev, 10/15min prod
   keyGenerator: (req) => `login:${req.ip}`,
   message: "Too many login attempts. Please try again later.",
 });

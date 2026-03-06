@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@modelcontextprotocol/server-filesystem": "^2026.1.14",
+    "@sentry/nextjs": "^10.40.0",
     "pg": "^8.18.0"
   }
 }

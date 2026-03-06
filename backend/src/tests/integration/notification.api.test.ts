@@ -18,14 +18,14 @@ import { v4 as uuidv4 } from 'uuid';
 
 describe('Section 5.9: Notification API Integration Tests', () => {
   let userToken: string;
-  // @ts-expect-error - userId is declared but not used in this test file
-  let userId: string;
+  // @ts-expect-error - _userId is declared but not used in this test file
+  let _userId: string;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     await clearTestData();
 
     const user = await createTestUser();
-    userId = user.id;
+    _userId = user.id;
 
     const tokens = await generateTestTokens(user.id);
     userToken = tokens.accessToken;
@@ -140,3 +140,4 @@ describe('Section 5.9: Notification API Integration Tests', () => {
     });
   });
 });
+

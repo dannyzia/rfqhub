@@ -1,12 +1,19 @@
 import { Router } from 'express';
-import { createSimpleRfq, getSimpleRfqResponseForm } from '../controllers/simpleRfqController';
+import { createSimpleRfq, getSimpleRfqResponseForm, getSimpleRfqTenderType } from '../controllers/simpleRfqController';
+import { authenticate, authorize } from '../middleware';
 
 const router = Router();
 
-// POST /tenders/simple-rfq
-router.post('/simple-rfq', createSimpleRfq);
+// Apply authentication to all routes
+router.use(authenticate);
 
-// GET /tenders/simple-rfq/:id/response-form
+// POST /tenders/simple-rfq - Requires buyer or vendor role
+router.post('/simple-rfq', authorize('buyer', 'vendor', 'admin'), createSimpleRfq);
+
+// GET /tenders/simple-rfq/:id/response-form - Read access for authenticated users
 router.get('/simple-rfq/:id/response-form', getSimpleRfqResponseForm);
+
+// GET /tenders/simple-rfq/:id/tender-type - Read access for authenticated users
+router.get('/simple-rfq/:id/tender-type', getSimpleRfqTenderType);
 
 export default router;

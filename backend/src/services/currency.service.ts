@@ -220,6 +220,48 @@ export const currencyService = {
     return mapRowToRate(result.rows[0]);
   },
 
+  async getSupportedCurrencies(): Promise<
+    Array<{ code: string; name: string; symbol: string }>
+  > {
+    const result = await pool.query<{ code: string; name: string; symbol: string }>(
+      "SELECT code, name, symbol FROM currencies ORDER BY code ASC",
+    );
+    return result.rows;
+  },
+
+  async getExchangeRateHistory(
+    baseCurrency: string,
+    targetCurrency: string,
+    days: number,
+  ): Promise<
+    Array<{
+      fromCurrency: string;
+      toCurrency: string;
+      rate: number;
+      date: Date;
+    }>
+  > {
+    const result = await pool.query<{
+      fromCurrency: string;
+      toCurrency: string;
+      rate: number;
+      date: Date;
+    }>(
+      `SELECT
+         base_currency  AS "fromCurrency",
+         target_currency AS "toCurrency",
+         rate,
+         fetched_at     AS "date"
+       FROM currency_rate_history
+       WHERE base_currency = $1
+         AND target_currency = $2
+         AND fetched_at >= NOW() - INTERVAL '1 day' * $3
+       ORDER BY fetched_at DESC`,
+      [baseCurrency, targetCurrency, days],
+    );
+    return result.rows;
+  },
+
   async getRateAge(
     baseCurrency: string,
     targetCurrency: string,

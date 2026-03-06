@@ -95,8 +95,10 @@ export const authController = {
 
   async logout(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const refreshToken =
-        req.body.refreshToken || req.headers.authorization?.split(" ")[1];
+      // Only invalidate a refresh token supplied explicitly in the request body.
+      // The Authorization header contains the JWT *access* token, not the refresh
+      // UUID — passing it to the service would cause a Postgres uuid type error.
+      const refreshToken = req.body.refreshToken as string | undefined;
       if (refreshToken) {
         await authService.logout(refreshToken);
       }

@@ -21,9 +21,9 @@ describe('Section 5.11: Export API Integration Tests', () => {
   let buyerToken: string;
   let tenderId: string;
 
-  beforeEach(async () => {
-    console.log('🔧 [DEBUG] Export test beforeEach starting...');
-    console.time('beforeEach');
+  beforeAll(async () => {
+    console.log('🔧 [DEBUG] Export test beforeAll starting...');
+    console.time('beforeAll');
 
     console.log('🔧 [DEBUG] Calling clearTestData()...');
     await clearTestData();
@@ -62,8 +62,8 @@ describe('Section 5.11: Export API Integration Tests', () => {
     tenderId = tenderResponse.body.data?.id || uuidv4();
     console.log('✅ [DEBUG] Tender ID:', tenderId);
 
-    console.timeEnd('beforeEach');
-    console.log('✅ [DEBUG] Export test beforeEach completed');
+    console.timeEnd('beforeAll');
+    console.log('✅ [DEBUG] Export test beforeAll completed');
   });
 
   describe('EXPORT-I001: GET /api/tenders/:id/export - Export Tender', () => {

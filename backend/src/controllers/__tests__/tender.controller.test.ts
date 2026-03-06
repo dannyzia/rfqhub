@@ -2,6 +2,9 @@ import { Request, Response, NextFunction } from 'express';
 import { tenderController } from '../tender.controller';
 import { tenderService } from '../../services/tender.service';
 
+// Import the mapTenderRow function for testing
+const { mapTenderRow } = require('../tender.controller');
+
 jest.mock('../../services/tender.service');
 jest.mock('../../config/logger');
 
@@ -35,15 +38,26 @@ describe('TenderController', () => {
     it('should create a new tender successfully', async () => {
       const mockTender = {
         id: 'tender-001',
+        referenceNumber: 'TNDR-2023-001',
         title: 'Infrastructure Project',
         description: 'Large infrastructure project',
         status: 'draft',
-        buyer_org_id: 'org-001',
-        tender_type: 'open',
-        procurement_type: 'goods',
+        organizationId: 'org-001',
+        tenderType: 'open',
+        visibility: 'public',
+        procurementType: 'goods',
         currency: 'USD',
-        estimated_cost: 500000,
-        created_at: new Date(),
+        estimatedCost: 500000,
+        bidSecurityAmount: null,
+        preBidMeetingDate: null,
+        preBidMeetingLink: null,
+        submissionDeadline: null,
+        bidOpeningTime: null,
+        validityDays: null,
+        twoEnvelopeSystem: false,
+        createdBy: 'user-001',
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       (tenderService.create as jest.Mock).mockResolvedValue(mockTender);
@@ -154,11 +168,28 @@ describe('TenderController', () => {
     it('should return tender for owner', async () => {
       const mockTender = {
         id: 'tender-001',
+        tender_number: 'TNDR-2023-001',
         title: 'Project 1',
+        description: 'Test Description',
         status: 'published',
         buyer_org_id: 'org-001',
+        tender_type: 'open',
+        visibility: 'public',
+        procurement_type: 'goods',
+        currency: 'BDT',
+        price_basis: 'unit_rate',
         fund_allocation: 100000,
         estimated_cost: 500000,
+        bid_security_amount: null,
+        pre_bid_meeting_date: null,
+        pre_bid_meeting_link: null,
+        submission_deadline: '2023-12-31T23:59:59Z',
+        bid_opening_time: '2024-01-01T10:00:00Z',
+        validity_days: 30,
+        two_envelope_system: false,
+        created_by: 'user-001',
+        created_at: '2023-12-01T10:00:00Z',
+        updated_at: '2023-12-01T10:00:00Z',
       };
 
       (tenderService.findById as jest.Mock).mockResolvedValue(mockTender);
@@ -168,17 +199,34 @@ describe('TenderController', () => {
       await tenderController.findById(mockReq as Request, mockRes as Response, mockNext);
 
       expect(mockRes.status).toHaveBeenCalledWith(200);
-      expect(mockRes.json).toHaveBeenCalledWith({ data: mockTender });
+      expect(mockRes.json).toHaveBeenCalledWith({ data: mapTenderRow(mockTender) });
     });
 
     it('should hide sensitive data from vendors', async () => {
       const mockTender = {
         id: 'tender-001',
+        tender_number: 'TNDR-2023-001',
         title: 'Project 1',
+        description: 'Test Description',
         status: 'published',
         buyer_org_id: 'org-002',
+        tender_type: 'open',
+        visibility: 'public',
+        procurement_type: 'goods',
+        currency: 'BDT',
+        price_basis: 'unit_rate',
         fund_allocation: 100000,
         estimated_cost: 500000,
+        bid_security_amount: null,
+        pre_bid_meeting_date: null,
+        pre_bid_meeting_link: null,
+        submission_deadline: '2023-12-31T23:59:59Z',
+        bid_opening_time: '2024-01-01T10:00:00Z',
+        validity_days: 30,
+        two_envelope_system: false,
+        created_by: 'user-002',
+        created_at: '2023-12-01T10:00:00Z',
+        updated_at: '2023-12-01T10:00:00Z',
       };
 
       (tenderService.findById as jest.Mock).mockResolvedValue(mockTender);
@@ -197,6 +245,7 @@ describe('TenderController', () => {
       await tenderController.findById(mockReq as Request, mockRes as Response, mockNext);
 
       expect(mockRes.status).toHaveBeenCalledWith(200);
+      expect(mockRes.json).toHaveBeenCalledWith({ data: mapTenderRow(mockTender) });
       // Verify that the controller was called for a vendor user
       expect(mockRes.json).toHaveBeenCalled();
       const response = (mockRes.json as jest.Mock).mock.calls[0][0].data;
@@ -235,7 +284,26 @@ describe('TenderController', () => {
         id: 'tender-001',
         title: 'Updated Project',
         status: 'draft',
-        buyer_org_id: 'org-001',
+        organizationId: undefined,
+        referenceNumber: undefined,
+        description: null,
+        tenderType: undefined,
+        visibility: undefined,
+        procurementType: undefined,
+        currency: undefined,
+        priceBasis: undefined,
+        fundAllocation: null,
+        estimatedCost: null,
+        bidSecurityAmount: null,
+        preBidMeetingDate: null,
+        preBidMeetingLink: null,
+        submissionDeadline: undefined,
+        bidOpeningTime: null,
+        validityDays: undefined,
+        twoEnvelopeSystem: false,
+        createdBy: undefined,
+        createdAt: undefined,
+        updatedAt: undefined,
       };
 
       (tenderService.update as jest.Mock).mockResolvedValue(mockUpdatedTender);
@@ -285,7 +353,26 @@ describe('TenderController', () => {
         id: 'tender-001',
         title: 'Project 1',
         status: 'published',
-        published_date: new Date(),
+        organizationId: undefined,
+        referenceNumber: undefined,
+        description: null,
+        tenderType: undefined,
+        visibility: undefined,
+        procurementType: undefined,
+        currency: undefined,
+        priceBasis: undefined,
+        fundAllocation: null,
+        estimatedCost: null,
+        bidSecurityAmount: null,
+        preBidMeetingDate: null,
+        preBidMeetingLink: null,
+        submissionDeadline: undefined,
+        bidOpeningTime: null,
+        validityDays: undefined,
+        twoEnvelopeSystem: false,
+        createdBy: undefined,
+        createdAt: undefined,
+        updatedAt: undefined,
       };
 
       (tenderService.publish as jest.Mock).mockResolvedValue(mockPublishedTender);
@@ -325,8 +412,28 @@ describe('TenderController', () => {
     it('should cancel a tender with reason', async () => {
       const mockCancelledTender = {
         id: 'tender-001',
+        title: 'Project 1',
         status: 'cancelled',
-        cancellation_reason: 'Budget constraints',
+        organizationId: undefined,
+        referenceNumber: undefined,
+        description: null,
+        tenderType: undefined,
+        visibility: undefined,
+        procurementType: undefined,
+        currency: undefined,
+        priceBasis: undefined,
+        fundAllocation: null,
+        estimatedCost: null,
+        bidSecurityAmount: null,
+        preBidMeetingDate: null,
+        preBidMeetingLink: null,
+        submissionDeadline: undefined,
+        bidOpeningTime: null,
+        validityDays: undefined,
+        twoEnvelopeSystem: false,
+        createdBy: undefined,
+        createdAt: undefined,
+        updatedAt: undefined,
       };
 
       (tenderService.cancel as jest.Mock).mockResolvedValue(mockCancelledTender);
@@ -367,7 +474,31 @@ describe('TenderController', () => {
 
   describe('getTenderStatus', () => {
     it('should return current tender status', async () => {
-      const mockTender = { id: 'tender-001', status: 'published' };
+      const mockTender = { 
+        id: 'tender-001', 
+        tender_number: 'TNDR-2023-001',
+        title: 'Test Tender',
+        description: 'Test Description',
+        status: 'published',
+        buyer_org_id: 'org-001',
+        tender_type: 'open',
+        visibility: 'public',
+        procurement_type: 'goods',
+        currency: 'BDT',
+        price_basis: 'unit_rate',
+        fund_allocation: null,
+        estimated_cost: 500000,
+        bid_security_amount: null,
+        pre_bid_meeting_date: null,
+        pre_bid_meeting_link: null,
+        submission_deadline: '2023-12-31T23:59:59Z',
+        bid_opening_time: '2024-01-01T10:00:00Z',
+        validity_days: 30,
+        two_envelope_system: false,
+        created_by: 'user-001',
+        created_at: '2023-12-01T10:00:00Z',
+        updated_at: '2023-12-01T10:00:00Z',
+      };
       (tenderService.findById as jest.Mock).mockResolvedValue(mockTender);
 
       mockReq.params = { id: 'tender-001' };
@@ -375,7 +506,7 @@ describe('TenderController', () => {
       await tenderController.findById(mockReq as Request, mockRes as Response, mockNext);
 
       expect(mockRes.status).toHaveBeenCalledWith(200);
-      expect(mockRes.json).toHaveBeenCalledWith({ data: mockTender });
+      expect(mockRes.json).toHaveBeenCalledWith({ data: mapTenderRow(mockTender) });
     });
 
     it('should handle tender not found', async () => {

@@ -5,7 +5,7 @@
   import { api } from '$lib/utils/api';
   import { user } from '$lib/stores/auth';
   import { z } from 'zod';
-  import { simpleRfqDataSchema } from '$lib/schemas/tenderMode.schema';
+  import { simpleRfqDataSchema } from '$lib/schemas/tenderMode.schema.ts';
   import { OrganizationType } from '$lib/types';
 
   let buyerInfo = {

@@ -3,6 +3,7 @@ import cors from "cors";
 import helmet from "helmet";
 import compression from "compression";
 import rateLimit from "express-rate-limit";
+import * as Sentry from "@sentry/node";
 import { logger } from "./config/logger";
 import { config } from "./config";
 import { errorHandler } from "./middleware/error.middleware";
@@ -109,6 +110,9 @@ app.use((req: Request, res: Response) => {
     timestamp: new Date().toISOString(),
   });
 });
+
+// Sentry error handler (must be before existing error handler)
+Sentry.setupExpressErrorHandler(app);
 
 // Global error handler (must be last)
 app.use(errorHandler);

@@ -188,8 +188,9 @@ describe('VendorDashboard', () => {
     render(VendorDashboard);
 
     await waitFor(() => {
-      expect(screen.getByText('1')).toBeInTheDocument(); // Draft bids
-      expect(screen.getByText('1')).toBeInTheDocument(); // Submitted bids
+      // Draft: 1, Submitted: 1 — two separate '1' stat elements
+      const ones = screen.getAllByText('1');
+      expect(ones.length).toBeGreaterThanOrEqual(2);
     });
   });
 
@@ -253,7 +254,8 @@ describe('VendorDashboard', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Business License')).toBeInTheDocument();
-      expect(screen.getByText('business_license.pdf (1 MB)')).toBeInTheDocument();
+      // formatFileSize(1024000) → "1000 KB" (1024000 bytes < 1 MB threshold of 1048576)
+      expect(screen.getByText('business_license.pdf (1000 KB)')).toBeInTheDocument();
       expect(screen.getByText('Tax Certificate')).toBeInTheDocument();
       expect(screen.getByText('tax_certificate.pdf (500 KB)')).toBeInTheDocument();
     });

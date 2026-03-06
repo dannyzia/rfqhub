@@ -2,6 +2,7 @@
   // Live Bidding Dashboard
   import { onMount, onDestroy } from 'svelte';
   import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
   import { api } from '$lib/utils/api';
   import { user } from '$lib/stores/auth';
 

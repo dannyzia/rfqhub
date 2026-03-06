@@ -14,9 +14,9 @@ function isValidOrganizationId(organizationId: string | undefined): organization
   if (!organizationId || typeof organizationId !== 'string') {
     return false;
   }
-  // Validate that organizationId is a positive integer
+  // Validate that organizationId is a positive integer within PostgreSQL bigint range (max 19 digits)
   const integerRegex = /^[1-9]\d*$/;
-  return integerRegex.test(organizationId);
+  return integerRegex.test(organizationId) && organizationId.length <= 19;
 }
 
 interface AuthenticatedRequest {

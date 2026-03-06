@@ -91,7 +91,9 @@ export const authenticate = async (
       roles: Array.isArray(user.roles) ? user.roles : [user.roles],
       companyId: user.organization_id?.toString() || user.id.toString(),
       orgId: user.organization_id?.toString() || user.id.toString(),
-      organizationType: user.organization_type,  // NEW
+      // organizationId is the canonical camelCase alias used by subscription/storage controllers
+      organizationId: user.organization_id?.toString() || user.id.toString(),
+      organizationType: user.organization_type,
     };
 
     next();

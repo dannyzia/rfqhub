@@ -30,7 +30,9 @@ export const tenderTypeSuggestionSchema = z.object({
 
   isTurnkey: z.boolean().default(false).optional(),
 
-  isOutsourcingPersonnel: z.boolean().default(false).optional()
+  isOutsourcingPersonnel: z.boolean().default(false).optional(),
+
+  organizationType: z.enum(['government', 'non-government']).optional()
 });
 
 export type TenderTypeSuggestionInput = z.infer<typeof tenderTypeSuggestionSchema>;

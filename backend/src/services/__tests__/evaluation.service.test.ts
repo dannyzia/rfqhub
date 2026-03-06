@@ -444,7 +444,9 @@ describe('EvaluationService', () => {
       mockDatabase.pool.query
         .mockResolvedValueOnce({ rows: [tender] })
         .mockResolvedValueOnce({ rows: matrix.tenderItems })
-        .mockResolvedValueOnce({ rows: matrix.bids });
+        .mockResolvedValueOnce({ rows: matrix.bids })
+        // one bid_items query per item×bid combination (1 item × 1 bid = 1 extra call)
+        .mockResolvedValueOnce({ rows: [] });
 
       const result = await evaluationService.getComparisonMatrix('tender-001', 'org-001');
 

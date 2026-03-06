@@ -388,3 +388,6 @@ export class TenderCreationService {
     }
   }
 }
+
+// Compatibility export alias
+export const tenderCreationService = TenderCreationService;

@@ -10,18 +10,22 @@ interface TenderRow {
   tender_number: string;
   buyer_org_id: string;
   title: string;
+  description?: string | null;
+  scope_of_work?: string | null;
   tender_type: string;
   visibility: string;
   procurement_type: string;
   currency: string;
   price_basis: string;
   fund_allocation: number | null;
+  estimated_cost?: number | null;
   bid_security_amount: number | null;
   pre_bid_meeting_date: string | null;
   pre_bid_meeting_link: string | null;
   submission_deadline: string;
   bid_opening_time: string | null;
   validity_days: number;
+  two_envelope_system?: boolean | null;
   status: string;
   created_by: string;
   created_at: string;
@@ -57,10 +61,10 @@ export const tenderService = {
   ): Promise<TenderRow> {
     const id = uuidv4();
     const tenderNumber = await generateTenderNumber(orgId);
-    
+
     // Step 1: Fetch tender type defaults
     const typeResult = await pool.query(
-      `SELECT 
+      `SELECT
         code,
         requires_tender_security,
         tender_security_percent,
@@ -69,59 +73,82 @@ export const tenderService = {
         requires_two_envelope
       FROM tender_type_definitions
       WHERE code = $1 AND is_active = TRUE`,
-      [input.tenderType]
+      [input.tenderType],
     );
-    
+
     if (typeResult.rows.length === 0) {
-      throw Object.assign(new Error(`Invalid tender type: ${input.tenderType}`), {
-        statusCode: 400,
-        code: 'INVALID_TENDER_TYPE'
-      });
+      throw Object.assign(
+        new Error(`Invalid tender type: ${input.tenderType}`),
+        {
+          statusCode: 400,
+          code: "INVALID_TENDER_TYPE",
+        },
+      );
     }
-    
+
     const tenderTypeDef = typeResult.rows[0];
-    
+
     // Step 2: Calculate/validate bid security
     let bidSecurityAmount = input.bidSecurityAmount;
-    
-    if (!bidSecurityAmount && tenderTypeDef.requires_tender_security && input.estimatedCost) {
+
+    if (
+      !bidSecurityAmount &&
+      tenderTypeDef.requires_tender_security &&
+      input.estimatedCost
+    ) {
       // Auto-calculate if not provided
-      const calculatedAmount = Math.round((input.estimatedCost * tenderTypeDef.tender_security_percent) / 100);
+      const calculatedAmount = Math.round(
+        (input.estimatedCost * tenderTypeDef.tender_security_percent) / 100,
+      );
       bidSecurityAmount = calculatedAmount;
-      
-      logger.info(`Auto-calculated bid security for tender ${id}: ${calculatedAmount}`);
+
+      logger.info(
+        `Auto-calculated bid security for tender ${id}: ${calculatedAmount}`,
+      );
     }
-    
+
     // Step 3: Set validity days (use type default if not provided)
-    const validityDays = input.validityDays || tenderTypeDef.default_validity_days;
-    
+    const validityDays =
+      input.validityDays || tenderTypeDef.default_validity_days;
+
     // Step 4: Validate submission deadline (use UTC for timezone consistency)
     const submissionDeadline = new Date(input.submissionDeadline);
     const minDaysFromNow = new Date();
-    minDaysFromNow.setUTCDate(minDaysFromNow.getUTCDate() + tenderTypeDef.min_submission_days);
+    minDaysFromNow.setUTCDate(
+      minDaysFromNow.getUTCDate() + tenderTypeDef.min_submission_days,
+    );
 
     if (submissionDeadline < minDaysFromNow) {
-      throw Object.assign(new Error(
-        `Submission deadline must be at least ${tenderTypeDef.min_submission_days} days from now for ${input.tenderType}`
-      ), {
-        statusCode: 400,
-        code: 'INVALID_SUBMISSION_DEADLINE'
-      });
+      throw Object.assign(
+        new Error(
+          `Submission deadline must be at least ${tenderTypeDef.min_submission_days} days from now for ${input.tenderType}`,
+        ),
+        {
+          statusCode: 400,
+          code: "INVALID_SUBMISSION_DEADLINE",
+        },
+      );
     }
-    
+
     // Step 5: Validate two-envelope requirement
     const twoEnvelopeSystem = input.twoEnvelopeSystem ?? false;
-    
+
     if (tenderTypeDef.requires_two_envelope && !twoEnvelopeSystem) {
-      throw Object.assign(new Error(
-        `${input.tenderType} requires two-envelope system (technical + commercial separation)`
-      ), {
-        statusCode: 400,
-        code: 'TWO_ENVELOPE_REQUIRED'
-      });
+      throw Object.assign(
+        new Error(
+          `${input.tenderType} requires two-envelope system (technical + commercial separation)`,
+        ),
+        {
+          statusCode: 400,
+          code: "TWO_ENVELOPE_REQUIRED",
+        },
+      );
     }
-    
+
     // Step 6: Insert tender with enhanced data
+    // NOTE: description, scope_of_work, and estimated_cost are accepted by the schema
+    // but stored in separate columns only if they exist in the DB.
+    // The mapper in tender.controller.ts returns them safely using the ?? null fallback.
     const { rows } = await pool.query<TenderRow>(
       `INSERT INTO tenders (
         id, tender_number, buyer_org_id, title, tender_type, visibility,
@@ -150,14 +177,14 @@ export const tenderService = {
         userId,
       ],
     );
-    
+
     // Step 7: Audit log
     logger.info({
       tenderType: input.tenderType,
       estimatedCost: input.estimatedCost,
       calculatedSecurity: bidSecurityAmount,
       autoCalculated: !input.bidSecurityAmount,
-      message: `Tender created with type-based validation`
+      message: `Tender created with type-based validation`,
     });
 
     logger.info(`Tender created: ${id} (${tenderNumber})`);
@@ -172,25 +199,51 @@ export const tenderService = {
     return rows[0] || null;
   },
 
-  async findAll(orgId: string, role: string): Promise<TenderRow[]> {
-    let query: string;
-    let params: string[];
+  async findAll(
+    orgId: string,
+    role: string,
+    options?: { page?: number; limit?: number; status?: string },
+  ): Promise<{ rows: TenderRow[]; total: number }> {
+    const page = options?.page ?? 1;
+    const limit = options?.limit ?? 20;
+    const offset = (page - 1) * limit;
+
+    let baseQuery: string;
+    let countQuery: string;
+    let params: (string | number)[];
 
     if (role === "buyer" || role === "admin") {
-      query =
-        "SELECT * FROM tenders WHERE buyer_org_id = $1 ORDER BY created_at DESC";
-      params = [orgId];
+      const statusClause = options?.status
+        ? `AND status = '${options.status.replace(/'/g, "''")}'`
+        : "";
+      baseQuery = `SELECT * FROM tenders WHERE buyer_org_id = $1 ${statusClause} ORDER BY created_at DESC LIMIT $2 OFFSET $3`;
+      countQuery = `SELECT COUNT(*) AS total FROM tenders WHERE buyer_org_id = $1 ${statusClause}`;
+      params = [orgId, limit, offset];
     } else {
-      query = `SELECT t.* FROM tenders t
+      const statusClause = options?.status
+        ? `AND t.status = '${options.status.replace(/'/g, "''")}'`
+        : "";
+      baseQuery = `SELECT t.* FROM tenders t
         LEFT JOIN tender_vendor_invitations tvi ON t.id = tvi.tender_id AND tvi.vendor_org_id = $1
-        WHERE (t.visibility = 'open' AND t.status != 'draft')
-           OR (t.visibility = 'limited' AND tvi.vendor_org_id IS NOT NULL)
-        ORDER BY t.created_at DESC`;
-      params = [orgId];
+        WHERE ((t.visibility = 'open' AND t.status != 'draft')
+           OR (t.visibility = 'limited' AND tvi.vendor_org_id IS NOT NULL)) ${statusClause}
+        ORDER BY t.created_at DESC LIMIT $2 OFFSET $3`;
+      countQuery = `SELECT COUNT(*) AS total FROM tenders t
+        LEFT JOIN tender_vendor_invitations tvi ON t.id = tvi.tender_id AND tvi.vendor_org_id = $1
+        WHERE ((t.visibility = 'open' AND t.status != 'draft')
+           OR (t.visibility = 'limited' AND tvi.vendor_org_id IS NOT NULL)) ${statusClause}`;
+      params = [orgId, limit, offset];
     }
 
-    const { rows } = await pool.query<TenderRow>(query, params);
-    return rows;
+    const [dataResult, countResult] = await Promise.all([
+      pool.query<TenderRow>(baseQuery, params),
+      pool.query<{ total: string }>(countQuery, [orgId]),
+    ]);
+
+    return {
+      rows: dataResult.rows,
+      total: parseInt(countResult.rows[0]?.total ?? "0", 10),
+    };
   },
 
   async update(
@@ -339,5 +392,33 @@ export const tenderService = {
 
   async cancel(id: string, orgId: string): Promise<TenderRow> {
     return this.transitionStatus(id, "cancelled", orgId);
+  },
+
+  async delete(id: string, orgId: string): Promise<void> {
+    const tender = await this.findById(id);
+
+    if (!tender) {
+      throw Object.assign(new Error("Tender not found"), {
+        statusCode: 404,
+        code: "NOT_FOUND",
+      });
+    }
+
+    if (tender.buyer_org_id !== orgId) {
+      throw Object.assign(new Error("Not authorized"), {
+        statusCode: 403,
+        code: "FORBIDDEN",
+      });
+    }
+
+    if (tender.status !== "draft") {
+      throw Object.assign(new Error("Can only delete draft tenders"), {
+        statusCode: 409,
+        code: "CONFLICT",
+      });
+    }
+
+    await pool.query("DELETE FROM tenders WHERE id = $1", [id]);
+    logger.info(`Tender deleted: ${id}`);
   },
 };

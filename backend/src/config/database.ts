@@ -16,7 +16,9 @@ const createPool = () => {
         connectionTimeoutMillis: 30000, // Increased timeout for tests
         maxUses: 7500,
         allowExitOnIdle: false,
-        ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: true } : false, // Enable SSL with cert verification in production
+        ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: true }
+            : process.env.DB_SSL === 'true' ? { rejectUnauthorized: false }
+            : false,
       });
     } else {
       console.log('Using individual database parameters');
@@ -26,7 +28,9 @@ const createPool = () => {
         database: process.env.DB_NAME || 'rfq_platform',
         user: process.env.DB_USER || 'postgres',
         password: process.env.DB_PASSWORD || 'postgres',
-        ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: true } : false, // Enable SSL with cert verification in production
+        ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: true }
+            : process.env.DB_SSL === 'true' ? { rejectUnauthorized: false }
+            : false,
         max: 20,
         idleTimeoutMillis: 30000,
         connectionTimeoutMillis: 30000, // Increased timeout for tests

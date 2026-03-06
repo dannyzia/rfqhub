@@ -384,3 +384,6 @@ export class StorageService {
     }
   }
 }
+
+// Compatibility export alias
+export const storageService = StorageService;

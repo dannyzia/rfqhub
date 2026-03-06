@@ -87,6 +87,25 @@ export const schedulerService = {
       isRunning: task.isRunning,
     }));
   },
+
+  /**
+   * TEST ONLY: Reset module-level state between test runs.
+   * Clears the internal tasks and intervals arrays.
+   * This method should NEVER be called in production code.
+   */
+  __resetForTests(): void {
+    tasks.length = 0;
+    intervals.length = 0;
+  },
+
+  /**
+   * TEST ONLY: Retrieve a task by name for testing purposes.
+   * This allows tests to manually run tasks via runTask.
+   * This method should NEVER be called in production code.
+   */
+  __getTaskForTests(name: string): ScheduledTask | undefined {
+    return tasks.find((task) => task.name === name);
+  },
 };
 
 // Register default tasks
