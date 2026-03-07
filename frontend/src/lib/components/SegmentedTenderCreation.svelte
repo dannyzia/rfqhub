@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import { TenderTypeDefinition } from '$lib/types/tender.types';
+  import type { TenderTypeDefinition } from '$lib/types/tender.types';
   
   export let tenderType: string = '';
   
