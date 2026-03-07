@@ -5,8 +5,5 @@
   "installCommand": "cd frontend && npm install",
   "framework": "sveltekit",
   "cleanUrls": true,
-  "trailingSlash": false,
-  "env": {
-    "PUBLIC_API_URL": "@public_api_url"
-  }
+  "trailingSlash": false
 }
