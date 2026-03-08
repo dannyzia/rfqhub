@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import PDFDocument from "pdfkit";
-import * as XLSX from "xlsx";
+import ExcelJS from "exceljs";
 import { pool, logger } from "../config";
 import type {
   RequestExportInput,
@@ -244,7 +244,8 @@ export const exportService = {
       [tenderId],
     );
 
-    const workbook = XLSX.utils.book_new();
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Comparison");
     const data = bids.rows.map((b, i) => ({
       Rank: i + 1,
       Vendor: b.vendor_name,
@@ -252,12 +253,17 @@ export const exportService = {
       "Compliance Status": b.compliance_status || "Pending",
       "Submitted At": b.submitted_at,
     }));
-
-    const worksheet = XLSX.utils.json_to_sheet(data);
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Comparison");
+    if (data.length > 0) {
+      worksheet.columns = Object.keys(data[0]).map((key) => ({
+        header: key,
+        key,
+        width: 18,
+      }));
+      worksheet.addRows(data);
+    }
 
     const fileName = `bid_comparison_${tenderId}_${Date.now()}.xlsx`;
-    // In production, write to file and upload to S3
+    // In production, write to buffer and upload to S3
     return `/exports/${fileName}`;
   },
 

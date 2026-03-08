@@ -17,7 +17,19 @@ jest.mock('pdfkit', () => {
   return MockPDFDocument;
 });
 
-jest.mock('xlsx');
+jest.mock('exceljs', () => {
+  const mockAddRows = jest.fn();
+  const mockWorksheet = {
+    columns: undefined as unknown,
+    addRows: mockAddRows,
+  };
+  return {
+    __esModule: true,
+    default: jest.fn().mockImplementation(() => ({
+      addWorksheet: () => mockWorksheet,
+    })),
+  };
+});
 
 // Now import the services AFTER mocking
 import { exportService } from '../export.service';
