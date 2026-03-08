@@ -21,6 +21,6 @@ router.get('/:ticketId', ticketController.findById);
 router.get('/', authorize('admin'), ticketController.findAll);
 
 // Admin: update ticket status / notes / priority
-router.patch('/:ticketId', authorize('admin'), validate(updateTicketSchema), ticketController.update);
+router.patch('/:ticketId', validate(updateTicketSchema), ticketController.update);
 
 export { router as ticketRoutes };

@@ -124,7 +124,10 @@
   {:else}
     <div class="space-y-3">
       {#each tickets as ticket}
-        <div class="chaingpt-card px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-3">
+        <a
+          href="/support/tickets/{ticket.id}"
+          class="chaingpt-card px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-3 hover:opacity-80 transition-opacity"
+        >
           <!-- Left: number + type + title -->
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2 mb-1">
@@ -156,7 +159,7 @@
               {ticket.status.replace('_', ' ')}
             </span>
           </div>
-        </div>
+        </a>
       {/each}
     </div>
 
