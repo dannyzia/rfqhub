@@ -101,8 +101,15 @@ Thumbs.db
 # 10. PROJECT-SPECIFIC DIRECTORIES
 # ==============================
 # Resource and planning directories
-Resources/
-plans/
+# Resources/ and plans/ are now tracked (uploaded to GitHub)
+
+# But exclude specific sensitive/large items from Resources
+Resources/CREDENTIALS.md
+Resources/*.zip
+Resources/docling-main/
+Resources/marker-master/
+Resources/markitdown-main/
+Resources/VendorlistBD/
 Instructions/
 scripts/
 rfq-platform/
