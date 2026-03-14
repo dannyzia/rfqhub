@@ -1,7 +1,8 @@
 // BullMQ workers — process background jobs
 // Run as a separate process: ts-node-dev src/workers/index.ts
 
-import { createWorker, type Job } from '../config/queue';
+import { createWorker } from '../config/queue';
+import type { Job } from 'bullmq';
 import { emailService } from '../services/email.service';
 import { pdfService } from '../services/pdf.service';
 import { db } from '../config/database';

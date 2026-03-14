@@ -1,0 +1,32 @@
+app = 'rfqhub-backend'
+primary_region = 'sin'
+
+[build]
+  dockerfile = 'Dockerfile'
+
+[http_service]
+  internal_port = 3001
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [http_service.concurrency]
+    type = 'requests'
+    hard_limit = 200
+    soft_limit = 150
+
+[[vm]]
+  memory = '512mb'
+  cpu_kind = 'shared'
+  cpus = 1
+
+[checks]
+  [checks.health]
+    grace_period = '15s'
+    interval = '30s'
+    method = 'GET'
+    path = '/api/health'
+    port = 3001
+    timeout = '5s'
+    type = 'http'

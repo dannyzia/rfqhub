@@ -23,7 +23,8 @@ export const authController = {
     const { email, password } = req.body as any;
     try {
       const result = await authService.signIn(email, password);
-      return reply.send({ user: result.user, session: { token: result.session.token, expiresAt: result.session.expiresAt } });
+      const s = result.session as { token: string; expiresAt: unknown };
+      return reply.send({ user: result.user, session: { token: s.token, expiresAt: s.expiresAt } });
     } catch (err: any) {
       if (err.message === 'PENDING') return reply.code(403).send({ error: 'Your account is pending admin approval.' });
       if (err.message === 'REJECTED') return reply.code(403).send({ error: 'Your registration was not approved. Contact support.' });

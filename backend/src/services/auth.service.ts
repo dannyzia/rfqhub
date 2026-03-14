@@ -53,7 +53,8 @@ export const authService = {
       body: { email, password },
     });
 
-    if (!result?.session) throw new Error('Invalid credentials');
+    const session = (result as { session?: unknown }).session;
+    if (!session) throw new Error('Invalid credentials');
 
     const [profile] = await db.select().from(profiles)
       .where(eq(profiles.id, result.user.id))
@@ -69,7 +70,7 @@ export const authService = {
 
     await auditService.log(result.user.id, profile.org_id, 'LOGIN', 'user', result.user.id, 'User logged in');
 
-    return { user: profile, session: result.session };
+    return { user: profile, session };
   },
 
   async getProfileById(userId: string) {

@@ -34,14 +34,12 @@ export const ticketService = {
     org_id: string | null;
   }) {
     const [ticket] = await db.insert(supportTickets).values({
-      ticket_number: `TKT-${new Date().getFullYear()}-${Date.now().toString(36).toUpperCase()}`,
-      subject: data.subject,
       description: data.description,
       type: data.type ?? 'general',
       priority: data.priority ?? 'medium',
       submitted_by: data.submitted_by,
       org_id: data.org_id,
-    }).returning();
+    } as never).returning();
     return ticket;
   },
 

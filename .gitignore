@@ -13,6 +13,7 @@ build/
 .env.development
 .env.production
 !.env.example
+!frontend/.env.production
 
 # Logs and debug
 *.log

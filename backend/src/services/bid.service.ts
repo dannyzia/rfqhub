@@ -70,7 +70,7 @@ export const bidService = {
   async getItems(bidId: string) {
     return db.select().from(bidItems)
       .where(eq(bidItems.bid_id, bidId))
-      .orderBy(bidItems.item_number);
+      .orderBy(bidItems.bid_id, bidItems.id);
   },
 
   async addItems(bidId: string, items: NewBidItem[]) {

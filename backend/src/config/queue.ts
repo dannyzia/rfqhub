@@ -2,16 +2,18 @@
 // Used for: email sending, PDF generation, materialized view refresh, scheduled tasks
 
 import { Queue, Worker, type Job } from 'bullmq';
+export type { Job } from 'bullmq';
 import IORedis from 'ioredis';
 import { env } from './env';
 
 // Shared Redis connection for all queues
-const connection = new IORedis(env.REDIS_URL, {
+const redis = new IORedis(env.REDIS_URL, {
   maxRetriesPerRequest: null,  // Required by BullMQ
   enableReadyCheck: false,
 });
+const connection = redis as unknown as import('bullmq').ConnectionOptions;
 
-connection.on('error', (err) => {
+redis.on('error', (err) => {
   console.error('[Redis] Connection error:', err.message);
 });
 
@@ -116,5 +118,5 @@ export async function closeQueues(): Promise<void> {
   await pdfQueue.close();
   await notificationQueue.close();
   await scheduledQueue.close();
-  await connection.quit();
+  await redis.quit();
 }

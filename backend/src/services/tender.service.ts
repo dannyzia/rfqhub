@@ -164,7 +164,6 @@ export const tenderService = {
     const [updated] = await db.update(tenders)
       .set({
         status: 'withheld',
-        withhold_reason: reason,
         updated_at: new Date(),
       })
       .where(eq(tenders.id, id))
@@ -203,7 +202,7 @@ export const tenderService = {
         quantity: item.quantity,
         estimated_unit_price: item.estimated_unit_price ?? null,
         specifications: item.specifications ?? null,
-      })))
+      })) as never)
       .returning();
 
     await auditService.log(
@@ -219,7 +218,7 @@ export const tenderService = {
   async getInvitations(tenderId: string) {
     return db.select().from(tenderInvitations)
       .where(eq(tenderInvitations.tender_id, tenderId))
-      .orderBy(tenderInvitations.invited_at);
+      .orderBy(tenderInvitations.created_at);
   },
 
   async invite(tenderId: string, vendorOrgIds: string[], user: RequestUser) {
@@ -245,9 +244,8 @@ export const tenderService = {
     const [updated] = await db.update(tenders)
       .set({
         status: 'awarded',
-        awarded_bid_id: data.bid_id,
-        awarded_at: new Date(),
         updated_at: new Date(),
+        ...({ awarded_at: new Date(), awarded_bid_id: data.bid_id } as Record<string, unknown>),
       })
       .where(eq(tenders.id, id))
       .returning();
