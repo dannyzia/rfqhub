@@ -1,7 +1,6 @@
 {
   "name": "rfq-hub-backend",
   "version": "1.0.0",
-  "type": "module",
   "scripts": {
     "dev": "tsx watch src/app.ts",
     "dev:workers": "tsx watch src/workers/index.ts",
