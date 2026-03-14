@@ -55,3 +55,12 @@ R2_BUCKET_NAME=rfq-buddy-files
 RESEND_API_KEY=...
 FRONTEND_URL=http://localhost:3000
 ```
+
+## Production (Vercel + Render)
+
+| Service | URL | What to set |
+|--------|-----|-------------|
+| **Vercel** (frontend) | https://rfqhub.vercel.app · **https://rfqhub.digital-papyrus.xyz** | **Domains:** In **Project → Settings → Domains** add `rfqhub.digital-papyrus.xyz`. In DNS for `digital-papyrus.xyz` add **CNAME** `rfqhub` → `cname.vercel-dns.com`. **Env:** `VITE_API_URL` = `https://rfqhub.onrender.com`, `VITE_USE_MOCK` = `false`. |
+| **Render** (backend) | https://rfqhub.onrender.com | `FRONTEND_URL` = `https://rfqhub.digital-papyrus.xyz` (CORS + auth redirects), `BETTER_AUTH_URL` = `https://rfqhub.onrender.com`. |
+
+After changing env on either side, trigger a new deploy so the app picks up the values.

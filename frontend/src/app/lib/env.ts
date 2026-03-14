@@ -5,6 +5,9 @@ export const env = {
   /** Backend API base URL (no trailing slash) */
   API_URL: import.meta.env.VITE_API_URL ?? 'http://localhost:3001',
 
+  /** Public app URL (canonical origin, e.g. for auth redirects) */
+  APP_URL: import.meta.env.VITE_APP_URL ?? (typeof window !== 'undefined' ? window.location.origin : ''),
+
   /** Whether we're in development mode */
   isDev: import.meta.env.DEV,
 
